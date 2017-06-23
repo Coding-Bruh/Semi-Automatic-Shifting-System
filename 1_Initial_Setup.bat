@@ -10,8 +10,10 @@
 ::--------------------------------------------------------------------------------------
 :: This script is only meant to be used as an initial setup.                           |
 :: DO NOT USE THIS SCRIPT AS A MEANS TO UPDATE CODE ON KEIL! YOU WILL LOSE YOUR CODE!! |
-:: Please use the Update_Keil.bat to update code into github.                           |
-:: Run update will be found under ...Documents\Github\Semi-Automatic-Shifting-System\  |
+:: Please use 2_Update_Project.bat to load the latest code in your local github        |
+:: repository into the Keil_v5 project environment.                                    |
+:: Please use 3_Update_Github.bat to load you code onto the Github.                    |
+:: All these can be found under ...Documents\Github\Semi-Automatic-Shifting-System\    |
 ::--------------------------------------------------------------------------------------
 
 
