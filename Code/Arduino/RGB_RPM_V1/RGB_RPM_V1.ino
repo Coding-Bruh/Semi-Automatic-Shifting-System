@@ -116,17 +116,17 @@ RPM = RPM*10;
 if(RPM >= 210 && RPM <= 630){
   setC = 0;
     Green_LED(1);
-    zero();
+    one();
 }
 else if(RPM >= 631 && RPM <= 1260){
   setC = 1;
     Green_LED(1);
-    zero();
+    one();
 }
 else if(RPM >= 1261 && RPM <= 1890){
   setC = 2; 
     Green_LED(1);
-    one();
+    two();
 }
 else if(RPM >= 1891 && RPM <= 2520){
   setC = 3; 
@@ -141,62 +141,65 @@ else if(RPM >= 2521 && RPM <= 3150){
 else if(RPM >= 3151 && RPM <= 3780){
   setC = 5;
     Green_LED(1);
-    four();
+    three();
 }
 else if(RPM >= 3781 && RPM <= 4410){
   setC = 6;
     Green_LED(1);
-    five();
+    four();
 }
 else if(RPM >= 4411 && RPM <= 5040){
   setC = 7;
     Green_LED(1);
-    six();
+    four();
 }
 else if(RPM >= 5041 && RPM <= 5670){
   setC = 8;
     Green_LED(1);
-    seven();
+    five();
 }
 else if(RPM >= 5671 && RPM <= 6300){
   setC = 9;
     Green_LED(1);
-    eight();
+    five();
 }
 else if(RPM >= 6301 && RPM <= 6930){
   setC = 10;
     Green_LED(1);
-    nine();
+    six();
 }
 else if(RPM >= 6931 && RPM <= 7560){
   setC = 11;
     Green_LED(1);
-    nine();
+    six();
 }
 else if(RPM >= 7561 && RPM <= 8190){ 
   setC = 12;
     Blue_LED(1);
-    neutral();
+    seven();
 }
 else if(RPM >= 8191 && RPM <= 8820){
   setC = 13;
     Blue_LED(1);
-    neutral();
+    eight();
 }
 else if(RPM >= 8821 && RPM <= 9450){
   setC = 14;
     Red_LED(1);
-    neutral();
+    nine();
 }
 else if(RPM >= 9451 && RPM <= 10000){
   setC = 15;
     Red_LED(1);
-    neutral();
+    zero();
 }
 else if(RPM > 10001){
 Flash_LED(70,1,'r');       //speed in milliseconds, brightness 0-255, color r = red, g = green, b = blue
 dot();
 }
+else
+zero();
+
 
 
 
