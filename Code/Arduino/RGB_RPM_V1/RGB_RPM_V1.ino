@@ -20,7 +20,7 @@ int sLen = 8;
 
 
 //RPM Simulation variable PIN
-int RPM_PIN = 15;
+int RPM_PIN = 0;
 int RPM = 0;
 int setC = 0;
 int setA = 0;
