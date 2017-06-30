@@ -55,7 +55,7 @@ int cLen = 16;
 int sLen = 7;
 int aLen = 2;
                                         //RPM Simulation variable PIN
-int RPM_PIN = 0;
+int RPM_PIN = 7;
 int RPM = 0;
                                         //Used to turn on Cathodes and Anodes of LED bar in main loop
 int setC = 0;
@@ -132,109 +132,109 @@ void loop()
           //RPM = analogRead(RPM_PIN);      //Use only for POT Demo mode SPI disabled
           //RPM = RPM*10;
 
-          //RPM = raw2int();           //Use when SPI enabled
+          RPM = raw2int();           //Use when SPI enabled
                                                                                 
 
 //Set RPM Limits  Plans to clean this up, maybe make a case statement for a for loop
 //In the loops the 7 segment functions are placed inside only to DEMO and debug the 7 segment functions, during normal operation they will need to be commented out entirely
 
-if(RPM >= 210 && RPM <= 630)   
+if(RPM >= 640 && RPM <= 650)   
 {                            
   setC = 0;
     Green_LED(1);
-    sevSeg(0,0);
+    one();
 }
-else if(RPM >= 631 && RPM <= 1260){
+else if(RPM >= 651 && RPM <= 700){
   setC = 1;
     Green_LED(1);
-    sevSeg(1,0);
+    one();
 }
-else if(RPM >= 1261 && RPM <= 1890){
+else if(RPM >= 701 && RPM <= 750){
   setC = 2; 
     Green_LED(1);
-    sevSeg(2,0);
+    two();
 }
-else if(RPM >= 1891 && RPM <= 2520){
+else if(RPM >= 751 && RPM <= 800){
   setC = 3; 
     Green_LED(1);
-    sevSeg(2,0);
+    two();
 }
-else if(RPM >= 2521 && RPM <= 3150){
+else if(RPM >= 801 && RPM <= 850){
   setC = 4;
     Green_LED(1);
-    sevSeg(3,0);
+    three();
 }
-else if(RPM >= 3151 && RPM <= 3780){
+else if(RPM >= 851 && RPM <= 900){
   setC = 5;
     Green_LED(1);
-    sevSeg(3,0);
+    three();
 }
-else if(RPM >= 3781 && RPM <= 4410){
+else if(RPM >= 901 && RPM <= 950){
   setC = 6;
     Green_LED(1);
-    sevSeg(4,0);
+    four();
 }
-else if(RPM >= 4411 && RPM <= 5040){
+else if(RPM >= 951 && RPM <= 1000){
   setC = 7;
     Green_LED(1);
-    sevSeg(4,0);
+    four();
 }
-else if(RPM >= 5041 && RPM <= 5670){
+else if(RPM >= 1001 && RPM <= 1050){
   setC = 8;
     Green_LED(1);
-    sevSeg(5,0);
+    five();
 }
-else if(RPM >= 5671 && RPM <= 6300){
+else if(RPM >= 1051 && RPM <= 1100){
   setC = 9;
     Green_LED(1);
-    sevSeg(5,0);
+    five();
 }
-else if(RPM >= 6301 && RPM <= 6930){
+else if(RPM >= 1101 && RPM <= 1150){
   setC = 10;
     Green_LED(1);
-    sevSeg(6,0);
+    six();
 }
-else if(RPM >= 6931 && RPM <= 7560){
+else if(RPM >= 1151 && RPM <= 1200){
   setC = 11;
     Green_LED(1);
-    sevSeg(6,0);
+    six();
 }
-else if(RPM >= 7561 && RPM <= 8190){ 
+else if(RPM >= 1201 && RPM <= 1250){ 
   setC = 12;
     Blue_LED(1);
-    sevSeg(7,0);
+    seven();
 }
-else if(RPM >= 8191 && RPM <= 8820){
+else if(RPM >= 1251 && RPM <= 1300){
   setC = 13;
     Blue_LED(1);
-    sevSeg(8,0);
+    eight();
 }
-else if(RPM >= 8821 && RPM <= 9450){
+else if(RPM >= 1301 && RPM <= 1350){
   setC = 14;
     Red_LED(1);
-    sevSeg(9,0);
+    nine();
 }
-else if(RPM >= 9451 && RPM <= 10000){
+else if(RPM >= 1351 && RPM <= 1400){
   setC = 15;
     Red_LED(1);
-    sevSeg('n',0);
+    neutral();
 }
-else if(RPM > 10001){
+else if(RPM > 1401){
 Flash_LED(70,1,'r');       //speed in milliseconds, brightness 0-255, color r = red, g = green, b = blue
-    sevSeg('d',0);
+    dot();
 }
 else
-sevSeg(0,0);
+zero();
 
 
 
 
 
 ///////////////////////////////////////////////////Debug Values
-Serial.print("Cathode: ");
-Serial.println(setC);
-Serial.print("Anode: ");
-Serial.println(setA);
+//Serial.print("Cathode: ");
+//Serial.println(setC);
+//Serial.print("Anode: ");
+//Serial.println(setA);
 Serial.print("RPM: ");
 Serial.println(RPM);    
 
@@ -245,7 +245,7 @@ Serial.println(RPM);
 
 ////////////////////////////////////////////////////7 seg test code
 
-  sevSeg('o',0);  
+segOff(); 
 }
 
 
@@ -363,6 +363,11 @@ void reset()
   Red_LED(255);
   Blue_LED(255);
   Green_LED(255);
+//      for(int cath = 0; cath <= cLen; cath++)
+//      {
+//          digitalWrite(cathode[cath],LOW);
+//                                                                                                                                                                                                                                                                                                                                                             
+//      }
 }
 
 
@@ -379,137 +384,116 @@ int raw2int()
 
 
 
-void sevSeg(char select, int flash_speed)                                           // Plans to make this a switch case to clean up the code   
-{                                                                                  // Will make a function void 7_segment(int number) 
-                                                                                   // 0 - 9, 'n', 'dot_flash', 'dot_steady', off
-  switch(select)
-        {     
-          case 0:
-                 {
-                  digitalWrite(seg[0],LOW);
-                  digitalWrite(seg[5],LOW);
-                  digitalWrite(seg[6],LOW);
-                  digitalWrite(seg[2],LOW);
-                  digitalWrite(seg[3],LOW);
-                  digitalWrite(seg[4],LOW);
-                  if(flash_speed>0)
-                    {
-                    delay(flash_speed);
-                    digitalWrite(seg[0],HIGH);                                                    
-                    digitalWrite(seg[5],HIGH);
-                    digitalWrite(seg[6],HIGH);
-                    digitalWrite(seg[2],HIGH);
-                    digitalWrite(seg[3],HIGH);
-                    digitalWrite(seg[4],HIGH);  
-                    }
-                  }
+void segOff()
+{
+  digitalWrite(seg[0],HIGH);
+  digitalWrite(seg[1],HIGH);
+  digitalWrite(seg[2],HIGH);
+  digitalWrite(seg[3],HIGH);
+  digitalWrite(seg[4],HIGH);
+  digitalWrite(seg[5],HIGH);
+  digitalWrite(seg[6],HIGH);
+  digitalWrite(seg[7],HIGH);
+}
 
-          case 1:
-                  {
-                    digitalWrite(seg[6],LOW);
-                    digitalWrite(seg[2],LOW);
-                  }
-                  
-          case 2:
-                  {
-                    digitalWrite(seg[5],LOW);
-                    digitalWrite(seg[6],LOW);
-                    digitalWrite(seg[1],LOW);
-                    digitalWrite(seg[4],LOW);
-                    digitalWrite(seg[3],LOW);
-                  }
-                  
-          case 3:
-                  {
-                    digitalWrite(seg[5],LOW);
-                    digitalWrite(seg[6],LOW);
-                    digitalWrite(seg[1],LOW);
-                    digitalWrite(seg[2],LOW);
-                    digitalWrite(seg[3],LOW);
-                  }
-                  
-          case 4:
-                  {
-                    digitalWrite(seg[0],LOW);
-                    digitalWrite(seg[1],LOW);
-                    digitalWrite(seg[6],LOW);
-                    digitalWrite(seg[2],LOW);
-                  
-                  }
-                  
-          case 5:
-                  {
-                    digitalWrite(seg[5],LOW);
-                    digitalWrite(seg[0],LOW);
-                    digitalWrite(seg[1],LOW);
-                    digitalWrite(seg[2],LOW);
-                    digitalWrite(seg[3],LOW);
-                  }
-                  
-          case 6:
-                  {
-                    digitalWrite(seg[5],LOW);
-                    digitalWrite(seg[0],LOW);
-                    digitalWrite(seg[1],LOW);
-                    digitalWrite(seg[2],LOW);
-                    digitalWrite(seg[3],LOW);
-                    digitalWrite(seg[4],LOW);    
-                  }
-                  
-           case 7:
-                  {
-                    digitalWrite(seg[0],LOW);
-                    digitalWrite(seg[5],LOW);
-                    digitalWrite(seg[6],LOW);
-                    digitalWrite(seg[2],LOW);
-                  }
-                  
-           case 8:
-                  {
-                    digitalWrite(seg[0],LOW);
-                    digitalWrite(seg[1],LOW);
-                    digitalWrite(seg[2],LOW);
-                    digitalWrite(seg[3],LOW);
-                    digitalWrite(seg[4],LOW);
-                    digitalWrite(seg[5],LOW);  
-                    digitalWrite(seg[6],LOW);  
-                  }
-                  
-            case 9:
-                  {
-                    digitalWrite(seg[0],LOW);
-                    digitalWrite(seg[5],LOW);
-                    digitalWrite(seg[6],LOW);
-                    digitalWrite(seg[1],LOW);
-                    digitalWrite(seg[2],LOW); 
-                  }
-                  
-            case 'n':
-                  {
-                    digitalWrite(seg[4],LOW);
-                    digitalWrite(seg[1],LOW);
-                    digitalWrite(seg[2],LOW);
-                  }
-                  
-            case 'd':
-                  {
-                    digitalWrite(seg[7],LOW);  
-                  if(flash_speed>0)
-                    {
-                    delay(flash_speed);
-                    digitalWrite(seg[7],HIGH);
-                    }
-                  }
-          default:                                                                                                                                     
-                {                                                                                
-                  digitalWrite(seg[0],HIGH);                                                    
-                  digitalWrite(seg[1],HIGH);
-                  digitalWrite(seg[2],HIGH);
-                  digitalWrite(seg[3],HIGH);
-                  digitalWrite(seg[4],HIGH);
-                  digitalWrite(seg[5],HIGH);  
-                  digitalWrite(seg[6],HIGH);
-                  digitalWrite(seg[7],HIGH);    
-                }
-        }                 
+void zero()
+{
+  digitalWrite(seg[0],LOW);
+  digitalWrite(seg[5],LOW);
+  digitalWrite(seg[6],LOW);
+  digitalWrite(seg[2],LOW);
+  digitalWrite(seg[3],LOW);
+  digitalWrite(seg[4],LOW);
+}
+
+void one()
+{
+  digitalWrite(seg[6],LOW);
+  digitalWrite(seg[2],LOW);
+}
+
+void two()
+{
+  digitalWrite(seg[5],LOW);
+  digitalWrite(seg[6],LOW);
+  digitalWrite(seg[1],LOW);
+  digitalWrite(seg[4],LOW);
+  digitalWrite(seg[3],LOW);
+}
+
+void three()
+{
+  digitalWrite(seg[5],LOW);
+  digitalWrite(seg[6],LOW);
+  digitalWrite(seg[1],LOW);
+  digitalWrite(seg[2],LOW);
+  digitalWrite(seg[3],LOW);
+}
+
+void four()
+{
+  digitalWrite(seg[0],LOW);
+  digitalWrite(seg[1],LOW);
+  digitalWrite(seg[6],LOW);
+  digitalWrite(seg[2],LOW);
+
+}
+
+void five()
+{
+  digitalWrite(seg[5],LOW);
+  digitalWrite(seg[0],LOW);
+  digitalWrite(seg[1],LOW);
+  digitalWrite(seg[2],LOW);
+  digitalWrite(seg[3],LOW);
+}
+
+void six()
+{
+  digitalWrite(seg[5],LOW);
+  digitalWrite(seg[0],LOW);
+  digitalWrite(seg[1],LOW);
+  digitalWrite(seg[2],LOW);
+  digitalWrite(seg[3],LOW);
+  digitalWrite(seg[4],LOW);
+}
+
+void seven()
+{
+  digitalWrite(seg[0],LOW);
+  digitalWrite(seg[5],LOW);
+  digitalWrite(seg[6],LOW);
+  digitalWrite(seg[2],LOW);
+}
+
+void eight()
+{
+  digitalWrite(seg[0],LOW);
+  digitalWrite(seg[1],LOW);
+  digitalWrite(seg[2],LOW);
+  digitalWrite(seg[3],LOW);
+  digitalWrite(seg[4],LOW);
+  digitalWrite(seg[5],LOW);
+  digitalWrite(seg[6],LOW);
+}
+
+void nine()
+{
+  digitalWrite(seg[0],LOW);
+  digitalWrite(seg[5],LOW);
+  digitalWrite(seg[6],LOW);
+  digitalWrite(seg[1],LOW);
+  digitalWrite(seg[2],LOW);
+}
+
+void neutral()
+{
+  digitalWrite(seg[4],LOW);
+  digitalWrite(seg[1],LOW);
+  digitalWrite(seg[2],LOW);
+}
+
+void dot()
+{
+  digitalWrite(seg[7],LOW);
 }
