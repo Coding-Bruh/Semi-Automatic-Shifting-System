@@ -256,21 +256,21 @@ segOff();
 void Red_LED(int bright){
   for(int aRed = 0; aRed <= aLen; aRed++){
         analogWrite(red[aRed],bright);
-        analogWrite(red[aRed+1],255);
+        analogWrite(red[aRed+1],HIGH);
 }
 }
 
 void Green_LED(int bright){
   for(int aGreen = 0; aGreen <= aLen; aGreen++){
         analogWrite(green[aGreen],bright);
-        analogWrite(green[aGreen+1],255);
+        analogWrite(green[aGreen+1],HIGH);
 }
 }
 
 void Blue_LED(int bright){
   for(int aBlue = 0; aBlue <= aLen; aBlue++){
        analogWrite(blue[aBlue],bright); 
-       analogWrite(blue[aBlue+1],255);
+       analogWrite(blue[aBlue+1],HIGH);
 }
 }
 /////////////////////////////////////////////////////////////////////////////////
