@@ -21,8 +21,8 @@ private:
   int gearIndeces[12][segSize];
 
   // Declaration of common anodes on LED Bar
-  int comAnodeSize = 16;
-  int comAanodeArr[anodeSize];
+  int comAnodes = 16;
+  int comAanodeArr[comAnodes];
 
   int color[3][3]; //Declaration of selection array
 };
