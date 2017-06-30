@@ -65,22 +65,22 @@ int cLen = 16;
 int cathode[] = {C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13,C14,C15,C16,0};
 
 void setup() {
-  
+
   ////////////////////////////////////////////////////////DEBUGGING Stuff
   //Potentiameter input
   pinMode(RPM_PIN,INPUT);
 
   //  setup serial
-  Serial.begin(9600);          
+  Serial.begin(9600);
 
   /////////////////////////////////////////////////////// 7 Segment pinout control
 
   for(int sPin = 0; sPin < sLen; sPin++){
     pinMode(seg[sPin],OUTPUT);
   }
-  
-  ////////////////////////////////////////////////////////RGB Anode control 
-  
+
+  ////////////////////////////////////////////////////////RGB Anode control
+
   ////////////////////////////////////////////////////////RED
   for (int aPin = 0; aPin < aLen; aPin++) {
     pinMode(red[aPin], OUTPUT);
@@ -90,12 +90,12 @@ void setup() {
   for (int aPin = 0; aPin < aLen; aPin++) {
     pinMode(green[aPin], OUTPUT);
   }
-  
-  ///////////////////////////////////////////////////////Blue 
+
+  ///////////////////////////////////////////////////////Blue
   for (int aPin = 0; aPin < aLen; aPin++) {
     pinMode(blue[aPin], OUTPUT);
   }
-  
+
   ///////////////////////////////////////////////////////Cathode Control
     for (int cPin = 0; cPin < cLen; cPin++) {
     pinMode(cathode[cPin], OUTPUT);
@@ -124,12 +124,12 @@ else if(RPM >= 631 && RPM <= 1260){
     one();
 }
 else if(RPM >= 1261 && RPM <= 1890){
-  setC = 2; 
+  setC = 2;
     Green_LED(1);
     two();
 }
 else if(RPM >= 1891 && RPM <= 2520){
-  setC = 3; 
+  setC = 3;
     Green_LED(1);
     two();
 }
@@ -173,7 +173,7 @@ else if(RPM >= 6931 && RPM <= 7560){
     Green_LED(1);
     six();
 }
-else if(RPM >= 7561 && RPM <= 8190){ 
+else if(RPM >= 7561 && RPM <= 8190){
   setC = 12;
     Blue_LED(1);
     seven();
@@ -210,7 +210,7 @@ Serial.println(setC);
 Serial.print("Anode: ");
 Serial.println(setA);
 Serial.print("RPM: ");
-Serial.println(RPM);    
+Serial.println(RPM);
 
 /////////////////////////////////////////////////Writing LEDs with color
 
@@ -219,7 +219,7 @@ Serial.println(RPM);
 
 ////////////////////////////////////////////////////7 seg test code
 
-  segOff();  
+  segOff();
 }
 
 
@@ -243,7 +243,7 @@ void Green_LED(int bright){
 
 void Blue_LED(int bright){
   for(int aBlue = 0; aBlue <= aLen; aBlue++){
-       analogWrite(blue[aBlue],bright); 
+       analogWrite(blue[aBlue],bright);
        analogWrite(blue[aBlue+1],255);
 }
 }
@@ -262,7 +262,7 @@ void section_LED(int set){
 ////////////////////////////////////////////////////FLASH Function (SHIFT FLASH)
 void Flash_LED(int Speed, int bright, char color){
 
-if(color == 'r'){    
+if(color == 'r'){
            for(int c = 0; c<=cLen; c++){
               digitalWrite(cathode[c],HIGH);
            }
@@ -270,11 +270,11 @@ if(color == 'r'){
               delay(Speed);
            for(int c = 0; c <= cLen; c++){
              digitalWrite(cathode[c],LOW);
-           }  
+           }
               delay(Speed);
               Red_LED(255);
-          }  
-else if(color == 'b'){  
+          }
+else if(color == 'b'){
            for(int c = 0; c<=cLen; c++){
               digitalWrite(cathode[c],HIGH);
            }
@@ -282,11 +282,11 @@ else if(color == 'b'){
               delay(Speed);
            for(int c = 0; c <= cLen; c++){
              digitalWrite(cathode[c],LOW);
-           }  
+           }
               delay(Speed);
-              Blue_LED(255);            
+              Blue_LED(255);
           }
-else if(color == 'g'){  
+else if(color == 'g'){
            for(int c = 0; c<=cLen; c++){
               digitalWrite(cathode[c],HIGH);
            }
@@ -294,10 +294,10 @@ else if(color == 'g'){
               delay(Speed);
            for(int c = 0; c <= cLen; c++){
              digitalWrite(cathode[c],LOW);
-           }  
+           }
               delay(Speed);
-              Green_LED(255);            
-          }          
+              Green_LED(255);
+          }
 }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -312,9 +312,9 @@ void initialize()
           Blue_LED(1);
           Green_LED(200);
       }
-    
 
-  
+
+
     for(int cath = 0; cath <= cLen; cath++)
       {
           digitalWrite(cathode[cath],LOW);
@@ -346,9 +346,9 @@ void segOff()
   digitalWrite(seg[2],HIGH);
   digitalWrite(seg[3],HIGH);
   digitalWrite(seg[4],HIGH);
-  digitalWrite(seg[5],HIGH);  
+  digitalWrite(seg[5],HIGH);
   digitalWrite(seg[6],HIGH);
-  digitalWrite(seg[7],HIGH);    
+  digitalWrite(seg[7],HIGH);
 }
 
 void zero()
@@ -410,7 +410,7 @@ void six()
   digitalWrite(seg[1],LOW);
   digitalWrite(seg[2],LOW);
   digitalWrite(seg[3],LOW);
-  digitalWrite(seg[4],LOW);    
+  digitalWrite(seg[4],LOW);
 }
 
 void seven()
@@ -428,8 +428,8 @@ void eight()
   digitalWrite(seg[2],LOW);
   digitalWrite(seg[3],LOW);
   digitalWrite(seg[4],LOW);
-  digitalWrite(seg[5],LOW);  
-  digitalWrite(seg[6],LOW);  
+  digitalWrite(seg[5],LOW);
+  digitalWrite(seg[6],LOW);
 }
 
 void nine()
@@ -438,7 +438,7 @@ void nine()
   digitalWrite(seg[5],LOW);
   digitalWrite(seg[6],LOW);
   digitalWrite(seg[1],LOW);
-  digitalWrite(seg[2],LOW); 
+  digitalWrite(seg[2],LOW);
 }
 
 void neutral()
@@ -450,6 +450,5 @@ void neutral()
 
 void dot()
 {
-  digitalWrite(seg[7],LOW);  
+  digitalWrite(seg[7],LOW);
 }
-
