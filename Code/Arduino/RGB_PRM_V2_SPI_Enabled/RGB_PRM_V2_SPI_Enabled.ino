@@ -1,5 +1,6 @@
 #include <SPI.h>
 
+
 /*
 For RGB pins LOW = ON, HIGH = OFF
 each segment represents 210 RPM incriments
@@ -9,24 +10,25 @@ each segment represents 210 RPM incriments
 
                           //GLOBAL vars and pins
                                                  //7SEG pin setup
-int A = 40;  // 7                                       _ 5
-int B = 42;  // 6                                     0|__| 6
-int C = 32;  // 4                                     4| 1|2
-int D = 34;  // 2                                       --3   .7
-int E = 36;  // 1
-int F = 38;  // 9
-int G = 44;  // 10
-int DP= 30;  // 5
+#define sA 40  // 7                                       _ 5
+#define sB 42  // 6                                     0|__| 6
+#define sC 32  // 4                                     4| 1|2
+#define sD 34  // 2                                       --3   .7
+#define sE 36  // 1
+#define sF 38  // 9
+#define sG 44  // 10
+#define sDP 30  // 5
                           //Anodes  
-int Red1 = 2;
-int Red2 = 3;
-int Red3 = 4;
-int Green1 = 10;
-int Green2 = 9;
-int Green3 = 8;
-int Blue1 = 7;
-int Blue2 = 6;
-int Blue3 = 5;
+
+#define aG1 A0
+#define aG2 A1
+#define aG3 A2
+#define aB1 A3
+#define aB2 A5
+#define aB3 A4
+#define aR1 A6
+#define aR2 A7
+#define aR3 A8
                         //Cathode Pin setup                                         1   -   2   -  3
 int C1 = 46;                                          //C1 - 46            RPM - ..210 - ..420 - ..630
 int C2 = 48;                                          //C2 - 48            RPM - ..840 - .1050 - .1260
@@ -46,17 +48,20 @@ int C15 = 24;                                         //C15- 35            RPM -
 int C16 = 22;                                         //C16- 37            RPM - .9660 - .9870 - 10080
 
                           //Arrays for clean Setup intilization code
-int cathode[] = {C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13,C14,C15,C16,0};
-int seg[]={A,B,C,D,E,F,G,DP};
-int red[] = {2,3,4,0};
-int blue[] = {7,6,5,0};
-int green[] = {10,9,8,0};
+int cathode[] = {C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13,C14,C15,C16};
+int seg[]={sA,sB,sC,sD,sE,sF,sG,sDP};
+int red[] = {aR1,aR2,aR3};
+int blue[] = {aB1,aB2,aB3};
+int green[] = {aG1,aG2,aG3};
 int cLen = 16;
-int sLen = 7;
-int aLen = 2;
+int sLen = 8;
+int aLen = 3;
                                         //RPM Simulation variable PIN
 int RPM_PIN = 7;
 int RPM = 0;
+int RPM_IDLE = 0;                     //actual car values will be 600
+int RPM_REDLINE=4700;                  //actual car values will be 10000    for testing with volatge input we will use 1400
+
                                         //Used to turn on Cathodes and Anodes of LED bar in main loop
 int setC = 0;
 int setA = 0;
@@ -79,15 +84,10 @@ void setup()
   for (int aPin = 0; aPin < aLen; aPin++) 
       {
         pinMode(red[aPin], OUTPUT);
-      }
-  for (int aPin = 0; aPin < aLen; aPin++) 
-      {
         pinMode(green[aPin], OUTPUT);
-      } 
-  for (int aPin = 0; aPin < aLen; aPin++) 
-      {
         pinMode(blue[aPin], OUTPUT);
       }
+
   
               //Cathode Control
                                       
@@ -100,7 +100,7 @@ void setup()
   pinMode(RPM_PIN,INPUT);     //Potentiameter input
   Serial.begin(115200);       //  setup serial 
                
-  initialize();                        //Needed to clear any stored mem of registars makes sure no LEDs are randomly on when first turned on
+  initialize();               //Needed to clear any stored mem of registars makes sure no LEDs are randomly on when first turned on
                     
                     
                     
@@ -133,98 +133,32 @@ void loop()
           //RPM = RPM*10;
 
           RPM = raw2int();           //Use when SPI enabled
+          int ledLevel = map(RPM,RPM_IDLE,RPM_REDLINE, 0, cLen);
+          
+          reset();
+          if(RPM <=2500)
+            greenLED(LOW);
+          if(RPM >= 2501 && RPM <=4000)
+            blueLED(LOW);
+          if(RPM >= 4001)
+            redLED(LOW);
                                                                                 
 
-//Set RPM Limits  Plans to clean this up, maybe make a case statement for a for loop
-//In the loops the 7 segment functions are placed inside only to DEMO and debug the 7 segment functions, during normal operation they will need to be commented out entirely
-
-if(RPM >= 640 && RPM <= 650)   
-{                            
-  setC = 0;
-    Green_LED(1);
-    one();
-}
-else if(RPM >= 651 && RPM <= 700){
-  setC = 1;
-    Green_LED(1);
-    one();
-}
-else if(RPM >= 701 && RPM <= 750){
-  setC = 2; 
-    Green_LED(1);
-    two();
-}
-else if(RPM >= 751 && RPM <= 800){
-  setC = 3; 
-    Green_LED(1);
-    two();
-}
-else if(RPM >= 801 && RPM <= 850){
-  setC = 4;
-    Green_LED(1);
-    three();
-}
-else if(RPM >= 851 && RPM <= 900){
-  setC = 5;
-    Green_LED(1);
-    three();
-}
-else if(RPM >= 901 && RPM <= 950){
-  setC = 6;
-    Green_LED(1);
-    four();
-}
-else if(RPM >= 951 && RPM <= 1000){
-  setC = 7;
-    Green_LED(1);
-    four();
-}
-else if(RPM >= 1001 && RPM <= 1050){
-  setC = 8;
-    Green_LED(1);
-    five();
-}
-else if(RPM >= 1051 && RPM <= 1100){
-  setC = 9;
-    Green_LED(1);
-    five();
-}
-else if(RPM >= 1101 && RPM <= 1150){
-  setC = 10;
-    Green_LED(1);
-    six();
-}
-else if(RPM >= 1151 && RPM <= 1200){
-  setC = 11;
-    Green_LED(1);
-    six();
-}
-else if(RPM >= 1201 && RPM <= 1250){ 
-  setC = 12;
-    Blue_LED(1);
-    seven();
-}
-else if(RPM >= 1251 && RPM <= 1300){
-  setC = 13;
-    Blue_LED(1);
-    eight();
-}
-else if(RPM >= 1301 && RPM <= 1350){
-  setC = 14;
-    Red_LED(1);
-    nine();
-}
-else if(RPM >= 1351 && RPM <= 1400){
-  setC = 15;
-    Red_LED(1);
-    neutral();
-}
-else if(RPM > 1401){
-Flash_LED(70,1,'r');       //speed in milliseconds, brightness 0-255, color r = red, g = green, b = blue
-    dot();
-}
-else
-zero();
+  // loop over the LED array:
+  for (int thisLed = 0; thisLed < cLen; thisLed++) 
+    {
+    // if the array element's index is less than ledLevel,
+    // turn the pin for this element on:
+      if (thisLed < ledLevel) 
+        {
+          digitalWrite(cathode[thisLed],HIGH);
+        }
+        // turn off all pins higher than the ledLevel:
+      else 
+        {
+          digitalWrite(cathode[thisLed], LOW);
+        }
+  }
 
 
 
@@ -236,12 +170,12 @@ zero();
 //Serial.print("Anode: ");
 //Serial.println(setA);
 Serial.print("RPM: ");
-Serial.println(RPM);    
+Serial.println(ledLevel);    
 
 /////////////////////////////////////////////////Writing LEDs with color
 
-  section_LED(setC);
-  reset();
+  //section_LED(setC);
+  //reset();
 
 ////////////////////////////////////////////////////7 seg test code
 
@@ -252,96 +186,64 @@ segOff();
 
 //**************************LED FUNCTIONS****************************************//
 
-///////////////////////////////////////////////////////////LED set color functions
-void Red_LED(int bright){
-  for(int aRed = 0; aRed <= aLen; aRed++){
-        analogWrite(red[aRed],bright);
-        analogWrite(red[aRed+1],HIGH);
-}
+
+void redLED(bool state)
+{
+    for(int a = 0; a < aLen; a++)
+      {
+        digitalWrite(red[a],state);
+      }
 }
 
-void Green_LED(int bright){
-  for(int aGreen = 0; aGreen <= aLen; aGreen++){
-        analogWrite(green[aGreen],bright);
-        analogWrite(green[aGreen+1],HIGH);
-}
+void greenLED(bool state)
+{
+   
+    for(int a = 0; a < aLen; a++)
+      {
+        digitalWrite(green[a],state);
+      }
 }
 
-void Blue_LED(int bright){
-  for(int aBlue = 0; aBlue <= aLen; aBlue++){
-       analogWrite(blue[aBlue],bright); 
-       analogWrite(blue[aBlue+1],HIGH);
+void blueLED(bool state)
+{
+    
+    for(int a = 0; a < aLen; a++)
+      {
+        digitalWrite(blue[a],state);
+      }
 }
-}
-/////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////LED Cathode section function
-void section_LED(int set){
-  for(int cath = 0; cath <= set; cath++){
-  digitalWrite(cathode[cath],HIGH);
-
-  digitalWrite(cathode[cath+1],LOW);
+void flashLED()
+{
+  for(int led = 0; led < cLen; led++)
+  {
+    digitalWrite(cathode[led],HIGH);
+  }
+    delay(100);
+  for(int led = 0; led < cLen; led++)
+  {
+    digitalWrite(cathode[led],LOW);
+  }
+ 
 }
-}
-////////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////FLASH Function (SHIFT FLASH)
-void Flash_LED(int Speed, int bright, char color){
 
-if(color == 'r'){    
-           for(int c = 0; c<=cLen; c++){
-              digitalWrite(cathode[c],HIGH);
-           }
-              Red_LED(bright);
-              delay(Speed);
-           for(int c = 0; c <= cLen; c++){
-             digitalWrite(cathode[c],LOW);
-           }  
-              delay(Speed);
-              Red_LED(255);
-          }  
-else if(color == 'b'){  
-           for(int c = 0; c<=cLen; c++){
-              digitalWrite(cathode[c],HIGH);
-           }
-              Blue_LED(bright);
-              delay(Speed);
-           for(int c = 0; c <= cLen; c++){
-             digitalWrite(cathode[c],LOW);
-           }  
-              delay(Speed);
-              Blue_LED(255);            
-          }
-else if(color == 'g'){  
-           for(int c = 0; c<=cLen; c++){
-              digitalWrite(cathode[c],HIGH);
-           }
-              Green_LED(bright);
-              delay(Speed);
-           for(int c = 0; c <= cLen; c++){
-             digitalWrite(cathode[c],LOW);
-           }  
-              delay(Speed);
-              Green_LED(255);            
-          }          
-}
-////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////INITIALIZE
 void initialize()
 {
-    for(int cath = 0; cath <= cLen; cath++)
+    for(int cath = 0; cath < cLen; cath++)
       {
           digitalWrite(cathode[cath],HIGH);
           delay(100);
-          Red_LED(100);
-          Blue_LED(1);
-          Green_LED(200);
+          redLED(LOW);
+          blueLED(LOW);
+          greenLED(LOW);
       }
     
 
   
-    for(int cath = 0; cath <= cLen; cath++)
+    for(int cath = 0; cath < cLen; cath++)
       {
           digitalWrite(cathode[cath],LOW);
           delay(100);
@@ -349,7 +251,7 @@ void initialize()
       }
 
 
-    for(int segSection = 0; segSection <= sLen; segSection++)
+    for(int segSection = 0; segSection < sLen; segSection++)
       {
           digitalWrite(seg[segSection],HIGH);
            delay(100);
@@ -360,14 +262,9 @@ void initialize()
 
 void reset()
 {
-  Red_LED(255);
-  Blue_LED(255);
-  Green_LED(255);
-//      for(int cath = 0; cath <= cLen; cath++)
-//      {
-//          digitalWrite(cathode[cath],LOW);
-//                                                                                                                                                                                                                                                                                                                                                             
-//      }
+          redLED(HIGH);
+          blueLED(HIGH);
+          greenLED(HIGH);
 }
 
 
