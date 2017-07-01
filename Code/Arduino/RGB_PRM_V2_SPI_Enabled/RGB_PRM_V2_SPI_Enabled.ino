@@ -62,12 +62,32 @@ int RPM = 0;
 int RPM_IDLE = 0;                     //actual car values will be 600
 int RPM_REDLINE=4700;                  //actual car values will be 10000    for testing with volatge input we will use 1400
 
-                                        //Used to turn on Cathodes and Anodes of LED bar in main loop
-int setC = 0;
-int setA = 0;
-
+/////////////////////////////////////////SPI Define start
 volatile byte pos;                      //used for SPI buffer position, its set to global so it can be reset after populated to RPM array
 uint8_t buf[4];
+
+                                       //**********************SPI interrupt routine************************************
+ISR (SPI_STC_vect)
+{
+  if (pos < (sizeof (buf)))            //Gets SPI data value (RPM) and places in array (buf)
+    {
+        buf [pos++] = SPDR;
+    }
+}                                      // end of interrupt routine SPI_STC_vect
+
+int raw2int()
+{
+  int data_packet = ((short)buf[1]<<8)+buf[3];
+  if(data_packet > 32767)
+    data_packet = data_packet - 65536;
+    pos = 0;                                                                    //Global var to reset buffer count in interupt
+    Serial.print("Converted Data from raw SPI: ");                              //Debugging serial output for raw data conversion
+    Serial.println(data_packet);
+    return(data_packet);
+}
+//////////////////////////////////////SPI define end
+
+
 
                                        //************************SETUP LOOP************************************
 void setup() 
@@ -88,7 +108,6 @@ void setup()
         pinMode(blue[aPin], OUTPUT);
       }
 
-  
               //Cathode Control
                                       
     for (int cPin = 0; cPin < cLen; cPin++) 
@@ -97,15 +116,15 @@ void setup()
       }
   
   //DEBUGGING Stuff
-  pinMode(RPM_PIN,INPUT);     //Potentiameter input
+  //pinMode(RPM_PIN,INPUT);     //Potentiameter input
   Serial.begin(115200);       //  setup serial 
                
-  initialize();               //Needed to clear any stored mem of registars makes sure no LEDs are randomly on when first turned on
+  initialize();               //not needed anymore but looks cool
                     
                     
                     
                     //SPI Setup
-  SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
+  SPI.beginTransaction(SPISettings(800000, MSBFIRST, SPI_MODE0));
   SPCR |= bit (SPE);     // turn on SPI in slave mode
   pinMode(MISO, OUTPUT); // have to send on master in, *slave out*
   pos = 0;   // buffer empty to get ready for interrupts
@@ -114,14 +133,7 @@ void setup()
 }
 
 
-                                       //**********************SPI interrupt routine************************************
-ISR (SPI_STC_vect)
-{
-  if (pos < (sizeof (buf)))            //Gets SPI data value (RPM) and places in array (buf)
-    {
-        buf [pos++] = SPDR;
-    }
-}                                      // end of interrupt routine SPI_STC_vect
+
 
 
                                        //**********************main loop ***********************************************
@@ -135,14 +147,15 @@ void loop()
           RPM = raw2int();           //Use when SPI enabled
           int ledLevel = map(RPM,RPM_IDLE,RPM_REDLINE, 0, cLen);
           
-          reset();
+          resetLED();
+ 
           if(RPM <=2500)
             greenLED(LOW);
           if(RPM >= 2501 && RPM <=4000)
             blueLED(LOW);
           if(RPM >= 4001)
             redLED(LOW);
-                                                                                
+                                                                               
 
   // loop over the LED array:
   for (int thisLed = 0; thisLed < cLen; thisLed++) 
@@ -152,6 +165,7 @@ void loop()
       if (thisLed < ledLevel) 
         {
           digitalWrite(cathode[thisLed],HIGH);
+          printSeg(ledLevel);
         }
         // turn off all pins higher than the ledLevel:
       else 
@@ -159,29 +173,8 @@ void loop()
           digitalWrite(cathode[thisLed], LOW);
         }
   }
-
-
-
-
-
-///////////////////////////////////////////////////Debug Values
-//Serial.print("Cathode: ");
-//Serial.println(setC);
-//Serial.print("Anode: ");
-//Serial.println(setA);
-Serial.print("RPM: ");
-Serial.println(ledLevel);    
-
-/////////////////////////////////////////////////Writing LEDs with color
-
-  //section_LED(setC);
-  //reset();
-
-////////////////////////////////////////////////////7 seg test code
-
-segOff(); 
 }
-
+////////////////////////////////////////////////////////////////////////////////////
 
 
 //**************************LED FUNCTIONS****************************************//
@@ -235,6 +228,7 @@ void initialize()
     for(int cath = 0; cath < cLen; cath++)
       {
           digitalWrite(cathode[cath],HIGH);
+          printSeg(cath);
           delay(100);
           redLED(LOW);
           blueLED(LOW);
@@ -246,9 +240,8 @@ void initialize()
     for(int cath = 0; cath < cLen; cath++)
       {
           digitalWrite(cathode[cath],LOW);
-          delay(100);
-
-      }
+          delay(10);
+       }
 
 
     for(int segSection = 0; segSection < sLen; segSection++)
@@ -256,141 +249,40 @@ void initialize()
           digitalWrite(seg[segSection],HIGH);
            delay(100);
       }
-    reset();
+    resetLED();
 }
 
 
-void reset()
+void resetLED()
 {
-          redLED(HIGH);
-          blueLED(HIGH);
-          greenLED(HIGH);
+   redLED(HIGH);
+   blueLED(HIGH);
+   greenLED(HIGH);
 }
 
 
-int raw2int()
+int segment[13][8]={ {0,1,0,0,0,0,0,1},    /* Displays zero          */
+                     {1,1,0,1,1,1,0,1},    /* Displays one           */
+                     {1,0,1,0,0,0,0,1},    /* Displays two           */
+                     {1,0,0,0,1,0,0,1},    /* Displays three         */
+                     {0,0,0,1,1,1,0,1},    /* Displays four          */
+                     {0,0,0,0,1,0,1,1},    /* Displays five          */
+                     {0,0,0,0,0,0,1,1},    /* Displays six           */
+                     {0,1,0,1,1,0,0,1},    /* Displays seven         */
+                     {0,0,0,0,0,0,0,1},    /* Displays eight         */
+                     {0,0,0,1,1,0,0,1},    /* Displays nine          */
+                     {1,0,0,1,0,1,1,1},    /* Displays neutral       */
+                     {1,1,1,1,1,1,1,0},
+                     {1,1,1,1,1,1,1,1}}; /* Displays decimal point */
+
+void printSeg(int num)
 {
-  int data_packet = ((short)buf[1]*256)+buf[3];
-  if(data_packet > 32767)
-    data_packet = data_packet - 65536;
-    pos = 0;                                                                    //Global var to reset buffer count in interupt
-    Serial.print("Converted Data from raw SPI: ");                              //Debugging serial output for raw data conversion
-    Serial.println(data_packet);
-    return(data_packet);
-}
-
-
-
-void segOff()
+if(num > 12)      //sets any number given to function outside of its scope to turn off the 7seg display
+  num = 12;
+    
+  for(int led =0; led < 8; led++)
 {
-  digitalWrite(seg[0],HIGH);
-  digitalWrite(seg[1],HIGH);
-  digitalWrite(seg[2],HIGH);
-  digitalWrite(seg[3],HIGH);
-  digitalWrite(seg[4],HIGH);
-  digitalWrite(seg[5],HIGH);
-  digitalWrite(seg[6],HIGH);
-  digitalWrite(seg[7],HIGH);
+  digitalWrite(seg[led],segment[num][led]);
+}
 }
 
-void zero()
-{
-  digitalWrite(seg[0],LOW);
-  digitalWrite(seg[5],LOW);
-  digitalWrite(seg[6],LOW);
-  digitalWrite(seg[2],LOW);
-  digitalWrite(seg[3],LOW);
-  digitalWrite(seg[4],LOW);
-}
-
-void one()
-{
-  digitalWrite(seg[6],LOW);
-  digitalWrite(seg[2],LOW);
-}
-
-void two()
-{
-  digitalWrite(seg[5],LOW);
-  digitalWrite(seg[6],LOW);
-  digitalWrite(seg[1],LOW);
-  digitalWrite(seg[4],LOW);
-  digitalWrite(seg[3],LOW);
-}
-
-void three()
-{
-  digitalWrite(seg[5],LOW);
-  digitalWrite(seg[6],LOW);
-  digitalWrite(seg[1],LOW);
-  digitalWrite(seg[2],LOW);
-  digitalWrite(seg[3],LOW);
-}
-
-void four()
-{
-  digitalWrite(seg[0],LOW);
-  digitalWrite(seg[1],LOW);
-  digitalWrite(seg[6],LOW);
-  digitalWrite(seg[2],LOW);
-
-}
-
-void five()
-{
-  digitalWrite(seg[5],LOW);
-  digitalWrite(seg[0],LOW);
-  digitalWrite(seg[1],LOW);
-  digitalWrite(seg[2],LOW);
-  digitalWrite(seg[3],LOW);
-}
-
-void six()
-{
-  digitalWrite(seg[5],LOW);
-  digitalWrite(seg[0],LOW);
-  digitalWrite(seg[1],LOW);
-  digitalWrite(seg[2],LOW);
-  digitalWrite(seg[3],LOW);
-  digitalWrite(seg[4],LOW);
-}
-
-void seven()
-{
-  digitalWrite(seg[0],LOW);
-  digitalWrite(seg[5],LOW);
-  digitalWrite(seg[6],LOW);
-  digitalWrite(seg[2],LOW);
-}
-
-void eight()
-{
-  digitalWrite(seg[0],LOW);
-  digitalWrite(seg[1],LOW);
-  digitalWrite(seg[2],LOW);
-  digitalWrite(seg[3],LOW);
-  digitalWrite(seg[4],LOW);
-  digitalWrite(seg[5],LOW);
-  digitalWrite(seg[6],LOW);
-}
-
-void nine()
-{
-  digitalWrite(seg[0],LOW);
-  digitalWrite(seg[5],LOW);
-  digitalWrite(seg[6],LOW);
-  digitalWrite(seg[1],LOW);
-  digitalWrite(seg[2],LOW);
-}
-
-void neutral()
-{
-  digitalWrite(seg[4],LOW);
-  digitalWrite(seg[1],LOW);
-  digitalWrite(seg[2],LOW);
-}
-
-void dot()
-{
-  digitalWrite(seg[7],LOW);
-}
