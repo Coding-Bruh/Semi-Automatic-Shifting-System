@@ -81,30 +81,49 @@ int aLen = 3;
 //int RPM_PIN = 7;                                                  //RPM Simulation variable PINOUT not used when running SPI
 int RPM = 0;
 int RPM_IDLE = 0;                                                   //actual car values will be 600
-int RPM_REDLINE=4700;                                               //actual car values will be 10000    for testing with volatge input we will use 1400
-
+int RPM_REDLINE=4800;                                               //actual car values will be 10000    for testing with volatge input we will use 1400
+#define BLINK_HALF_PERIOD 100 
+#define CONVERGE_LED                                                // comment this line out to be boring
 /////////////////////////////////////////////////////               START of SPI Define start
 
 volatile byte pos;                                                  //used for SPI buffer position, its set to global so it can be reset after populated to RPM array
-uint8_t buf[4];
+uint8_t buf[2];
+uint8_t isr_flag = 0;
+int data_packet;
                                                                     //Start of Interrupt routine (ISR)
 ISR (SPI_STC_vect)
 {
+  isr_flag = 0;
   if (pos < (sizeof (buf)))                                         //Gets SPI data value (RPM) and places in array (buf)
     {
         buf [pos++] = SPDR;                                         //Populates buffer array with bytes at pos less then buff size
     }
+    
 }                                                                   // end of interrupt routine SPI_STC_vect
 
 int raw2int()
 {
-  int data_packet = ((short)buf[1]<<8)+buf[3];
-  if(data_packet > 32767)
-    data_packet = data_packet - 65536;
-    pos = 0;                                                        //Global pos variable set to 0 to reset buffer count for next interrupt buf population
+  if(isr_flag == 0) {
+  isr_flag = 1;
+  data_packet = buf[0];
+  data_packet <<= 8;
+  data_packet |= buf[1];
+  //data_packet = ((short)buf[0]<<8)+buf[1];
+//  if(data_packet > 32767)
+//    data_packet = data_packet - 65536;
+                                                            //Global pos variable set to 0 to reset buffer count for next interrupt buf population
     Serial.print("Converted Data from raw SPI: ");                  //Debugging serial output for raw data conversion
     Serial.println(data_packet);
+    Serial.print("buf[0]: ");
+    printHex(buf[0],2);
+    Serial.print("buf[1]: ");
+    printHex(buf[1],2);
+
+    pos = 0;
     return(data_packet);                                            //Returns signed integer value after conversion via PE3's datasheet for CAN messages
+  }
+  else
+  return data_packet;
 }
 /*
  * Fix for error posibility: create pesudo ACK fedback through a GPIO pin OR shorten up the BYTES sent and be strict about BYTE matching
@@ -142,7 +161,7 @@ void blueLED(bool state)
       }
 }
 
-void flashLED()
+void flashLED()                          // Currently does not funtion as of 7/4
 {
   for(int led = 0; led < cLen; led++)
   {
@@ -156,9 +175,13 @@ void flashLED()
  
 }
 
-void initialize()
+void initialize()                        // No longer needed but kept in for asthetics
 {
-    for(int cath = 0; cath < cLen; cath++)
+    int cath;
+    int segSection;
+    int segMAP = map(cath,0,sLen,0,cLen);
+     
+    for(cath = 0; cath < cLen; cath++)
       {
           digitalWrite(cathode[cath],HIGH);
           printSeg(cath);
@@ -173,11 +196,12 @@ void initialize()
     for(int cath = 0; cath < cLen; cath++)
       {
           digitalWrite(cathode[cath],LOW);
-          delay(10);
+          //digitalWrite(seg[segMAP],HIGH);
+          delay(100);
        }
 
 
-    for(int segSection = 0; segSection < sLen; segSection++)
+    for(segSection = 0; segSection < sLen; segSection++)
       {
           digitalWrite(seg[segSection],HIGH);
            delay(100);
@@ -186,8 +210,8 @@ void initialize()
 }
 
 
-void resetLED()
-{
+void resetLED()                   //Turns off all anodes on LED Bar which clears the display
+{                                 //regardless of what section on the cathodes are turned on
    redLED(HIGH);
    blueLED(HIGH);
    greenLED(HIGH);
@@ -210,15 +234,25 @@ int segment[13][8]={ {0,1,0,0,0,0,0,1},    /* Displays zero          */
 
 void printSeg(int num)
 {
-if(num > 12)      //sets any number given to function outside of its scope to turn off the 7seg display
-  num = 12;
+if(num > 12)                               //sets any number given to function outside 
+  num = 12;                                //of its scope to turn off the 7seg display
     
   for(int led =0; led < 8; led++)
-{
-  digitalWrite(seg[led],segment[num][led]);
-}
+  {
+    digitalWrite(seg[led],segment[num][led]);
+  }
 }
 ///////////////////////////////////////////////////////             END of LED functions
+
+void printHex(int num, int precision) {
+     char tmp[16];
+     char format[128];
+
+     sprintf(format, "0x%%.%dX", precision);
+
+     sprintf(tmp, format, num);
+     Serial.println(tmp);
+}
 
 //*********************** END of Global vars and pins and functions **********************************//
 
@@ -272,7 +306,6 @@ SPCR |= bit(SPIE);                                                            //
 
 
 //************************ Main loop **************************************//
-
 void loop() 
     {
 
@@ -280,7 +313,11 @@ void loop()
           //RPM = RPM*10;
 
           RPM = raw2int();           //Use when SPI enabled
-          int ledLevel = map(RPM,RPM_IDLE,RPM_REDLINE, 0, cLen);
+          #ifdef CONVERGE_LED
+            int ledLevel = map(RPM,RPM_IDLE,RPM_REDLINE, 0, cLen / 2);
+          #else
+            int ledLevel = map(RPM,RPM_IDLE,RPM_REDLINE, 0, cLen);
+          #endif
           
           resetLED();
  
@@ -297,7 +334,11 @@ void loop()
     {
     // if the array element's index is less than ledLevel,
     // turn the pin for this element on:
-      if (thisLed < ledLevel) 
+    #ifdef CONVERGE_LED
+      if ((thisLed < ledLevel || cLen - thisLed <= ledLevel) && (((millis() / BLINK_HALF_PERIOD) % 2) || ledLevel < cLen / 2))
+    #else
+      if (thisLed < ledLevel && (((millis() / 100) % 2) || ledLevel < cLen))
+    #endif
         {
           digitalWrite(cathode[thisLed],HIGH);
           printSeg(ledLevel);
