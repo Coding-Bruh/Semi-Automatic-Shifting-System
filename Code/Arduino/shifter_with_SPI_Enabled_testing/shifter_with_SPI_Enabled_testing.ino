@@ -23,7 +23,7 @@ int raw2int()
 }
 ////////////////////////////////////////////////////////             END of SPI define
   
-  const int forwards = 2;
+  const int forwards = 12;
   const int backwards = 4;
   const int up = 0;
   const int down = 1;
@@ -31,7 +31,6 @@ int raw2int()
   bool shiftdown = 0;
   const int ClutchOutsert = 8;   // HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA best var name ever!!
   const int ClutchInsert = 7;
-  const int RPM_Pin;
   const int Position = 2;
   int POS;
   int RPM;
@@ -69,9 +68,11 @@ void loop()
   Serial.println(POS);
   if(num2 > 900)
   {
-    //digitalWrite(ClutchOutsert, LOW);
-    //digitalWrite(ClutchInsert, HIGH);
-    //delay(500);
+    digitalWrite(ClutchOutsert, LOW);
+    digitalWrite(ClutchInsert, HIGH);
+    POS = analogRead(Position);
+    Serial.println(POS);
+    delay(500);
     digitalWrite(forwards,HIGH);
     digitalWrite(backwards,LOW);
     delay(110);
@@ -82,7 +83,9 @@ void loop()
     digitalWrite(backwards,HIGH);
     digitalWrite(ClutchOutsert, HIGH);
     digitalWrite(ClutchInsert, LOW);
-    delay(100);
+    POS = analogRead(Position);
+    Serial.println(POS);
+    delay(500);
     
   }
   else
@@ -95,6 +98,8 @@ void loop()
   {
     digitalWrite(ClutchOutsert, LOW);
     digitalWrite(ClutchInsert, HIGH);
+    POS = analogRead(Position);
+    Serial.println(POS);
     delay(100);
     digitalWrite(forwards,LOW);
     digitalWrite(backwards,HIGH);
@@ -104,9 +109,11 @@ void loop()
     delay(110);
     digitalWrite(forwards,HIGH);
     digitalWrite(backwards,HIGH);
-    //digitalWrite(ClutchOutsert, HIGH);
-    //digitalWrite(ClutchInsert, LOW);
-    //delay(500);
+    digitalWrite(ClutchOutsert, HIGH);
+    digitalWrite(ClutchInsert, LOW);
+    POS = analogRead(Position);
+    Serial.println(POS);
+    delay(500);
   }
   else 
    digitalWrite(backwards,HIGH);
