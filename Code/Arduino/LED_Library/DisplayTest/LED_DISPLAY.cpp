@@ -13,8 +13,9 @@ LED_DISPLAY::LED_DISPLAY(long SPI_Frequency)
 {
   rpmIdle = 0;
   rpmRedLine = 4800;
-  comAnodeLength = sizeof(comAnodeArr);
-  gaugeMode = 0;
+  comAnodeLength = sizeof(comAnodeArr) / 2; //needed to divide by 2 to get proper readings not sure why.
+
+  gaugeMode = false;
   
   RPM_PIN = 0;                    // RPM pin number
   pinMode(RPM_PIN,INPUT);         // setting RPM_Pin as input
@@ -22,7 +23,7 @@ LED_DISPLAY::LED_DISPLAY(long SPI_Frequency)
   for(int i: segArr)              // setting every element of 'segArr' to an output
     pinMode(i,OUTPUT);
 
-  for(int i: comAnodeArr)         // setting every element of 'comAnodeArr' to output
+  for(int i: comAnodeArr)
     pinMode(i,OUTPUT);
 
   for (int i = 0; i < 3; i++)     // setting every element of 'color' to output
@@ -31,8 +32,6 @@ LED_DISPLAY::LED_DISPLAY(long SPI_Frequency)
     pinMode(color[1][i],OUTPUT);
     pinMode(color[2][i],OUTPUT);
   }
-
-  segOff();
 
   SPI.beginTransaction(SPISettings(SPI_Frequency, MSBFIRST, SPI_MODE0));
   SPCR |= bit (SPE);
@@ -80,13 +79,13 @@ int LED_DISPLAY::processSPIBuffer()
     rpmData = (spiDataPacket[0]<< 8) | spiDataPacket[1];
     gear = spiDataPacket[2];
     //[For Diagnositics purposes only]--------------------------
-        /*
-         *Serial.print("Converted Data from raw SPI: ");
-         *Serial.println(spiData);
-         *Serial.print("Gear number");
-         *Serial.println(gear);
-         *printSPI_DATA();
-         */
+        
+         //Serial.print("Converted Data from raw SPI: ");
+         Serial.println(rpmData);
+         //Serial.print("Gear number");
+         //Serial.println(gear);
+         //printSPI_DATA();
+         
     //---------------------------------------------------------
     bufferPosition = 0;
     return rpmData;
@@ -124,35 +123,65 @@ void LED_DISPLAY::setLEDGaugeParameters(int idle, int redLine, int numComAnodes,
 }
 
 int LED_DISPLAY::mapToLEDGauge(int num)
-{ return map(num, rpmIdle, rpmRedLine, 0, comAnodeLength); }
+{
+  #ifdef guageMode
+    return map(num, rpmIdle, rpmRedLine, 0, comAnodeLength / 2);
+  #else
+    return map(num, rpmIdle, rpmRedLine, 0, comAnodeLength);
+  #endif
+}
 
-void LED_DISPLAY::setGaugeMode(int num)
-{ gaugeMode = num; }
+void LED_DISPLAY::setGaugeMode(int mode)
+{ gaugeMode = mode; }
 
 void LED_DISPLAY::displayRPMs(int num)
-{
-  Serial.println(num);
-  for(int i = 0; i < comAnodeLength; i++)
-  {
-    if((i < num || comAnodeLength - i <= num) && (((millis() / 100) % 2) || num < comAnodeLength / 2))
-    {
-      digitalWrite(comAnodeArr[i],HIGH);
-    }
-    else 
-    {
-      digitalWrite(comAnodeArr[i], LOW);
-    }
-    
-    
-    for (int i = 0; i < 3; i++) 
-    {
-      digitalWrite(color[0][i],LOW);  
-      digitalWrite(color[1][i],HIGH);
-      digitalWrite(color[2][i],HIGH);
-    }
+{ 
+  //Serial.println(num);      /*for debugging purposes only.*/
+  setColorModes(1,1,1);
   
-      for (int i = 0; i < 3; i++) 
-        digitalWrite(color[1][i], LOW);  
+  if (num <= 3)
+    setColorModes(1, 0);
+  else if (num > 3 && num <= 6)
+    setColorModes(2, 0);
+  else if (num > 6)
+    setColorModes(0, 0);
+  else;
+  
+  for(int i = 0; i < comAnodeLength; i++)
+  {   
+    switch (gaugeMode)
+    {
+      case false:
+        if((i < num || comAnodeLength - i <= num) && (((millis() / 100) % 2) || num < comAnodeLength / 2))
+          digitalWrite(comAnodeArr[i],HIGH);
+        else
+          digitalWrite(comAnodeArr[i], LOW);
+        break;
+      case true:
+        if((i < num) && (((millis() / 100) % 2) || num < comAnodeLength))
+          digitalWrite(comAnodeArr[i],HIGH);
+        else
+          digitalWrite(comAnodeArr[i], LOW);
+        break;
+      default:
+        break;  
+    }
   }
+}
+
+void LED_DISPLAY::setColorModes(int red, int green, int blue)
+{
+  for (int i = 0; i < 3; i++)     // setting every row of 'color' to its corresponding value
+  {
+    digitalWrite(color[0][i],red);  
+    digitalWrite(color[1][i],green);
+    digitalWrite(color[2][i],blue);
+  }
+}
+
+void LED_DISPLAY::setColorModes(int row, int state)
+{
+  for (int i : color[row])     // setting every element of the particular color to a state
+    digitalWrite(i, state);  
 }
 

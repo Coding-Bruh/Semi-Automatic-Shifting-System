@@ -37,8 +37,11 @@ public:
 
   // methods to set pins values [not important right now]
   void  setRPM_PIN(int num);
-  void  setGaugeMode(int num);
+  void  setGaugeMode(int mode);
   void  setDisplayTypePin(int num);
+
+  void  setColorModes(int red, int green, int blue);
+  void  setColorModes(int row, int state);
 
 private:
   int   RPM_PIN;        // RPM pin number
@@ -48,14 +51,15 @@ private:
   int   rpmRedLine;    //actual car values will be 10000 for testing with volatge input we will use 1400
   int   blinkPeriod;
   int   comAnodeLength;
-  int   gaugeMode;
   int   rpmData;        // current RPM value
   int   gear;           // current gear value
-
+  
   volatile int bufferPosition; // used as index for the 'spiDataPakcet' array
   uint8_t spiDataPacket[3];    // SPI data packet
+  
   bool  isrFlag;                // bool used to detect new interrupts
-
+  bool   gaugeMode;
+ 
   int   segArr[8] = {40, 42, 32, 34, 36, 38, 44, 30};
   //                A,  B,  C,  D,  E,  F,  G, DP
 
@@ -75,9 +79,9 @@ private:
   //                       C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13,C14,C15,C16
 
   // Declaration of selection array
-  int   color[3][3] = { { 2,3,4},      /* Red1, Red2, Red3       */
-                        {10,9,8},      /* Green1, Green2, Green3 */
-                        { 7,6,5} };    /* Blue1, Blue2, Blue3    */ 
+  int   color[3][3] = { {A6,A7,A8},      /* Red1, Red2, Red3       */
+                        {A0,A1,A2},      /* Green1, Green2, Green3 */
+                        {A3,A5,A4} };    /* Blue1, Blue2, Blue3    */ 
 };
 
 #endif

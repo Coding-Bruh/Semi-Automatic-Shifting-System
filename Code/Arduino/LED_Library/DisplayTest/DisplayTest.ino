@@ -8,14 +8,15 @@ void setup() {
   // put your setup code here, to run once:
   hud = LED_DISPLAY(SPI_Frequency);
   Serial.begin(115200);
+
 }
 
 ISR (SPI_STC_vect) {hud.readToSPIBuffer();}
 
 void loop() {
   // put your main code here, to run repeatedly:
+  
   int RPM = hud.getRPMData();
   hud.displayGear(hud.getCurrentGearState());
-
-  hud.displayRPMs(hud.mapToLEDGauge(RPM));
+  hud.displayRPMs(hud.mapToLEDGauge(RPM));  
 }
