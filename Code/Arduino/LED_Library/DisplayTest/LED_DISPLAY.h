@@ -11,7 +11,7 @@ public:
   LED_DISPLAY(long SPI_Frequency);
 
   // initialization method
-  bool makeDerricksBlinkyBlinky();
+  bool  makeDerricksBlinkyBlinky();
 
   // methods for reading and processing SPI data
   void  readToSPIBuffer();
@@ -19,6 +19,12 @@ public:
   
   void  printSPI_DATA();
 
+  int   mapToLEDGauge(int num);
+  void  setLEDGaugeParameters(int rpmIdle, int redLine, int numComAnodes, int blinky);
+  void  setGuageMode(int num);
+
+  void  displayRPMs(int num);
+   
   //methods to retrieve RPM and Gear number
   int   getRPMData();
   int   getCurrentGearState();
@@ -31,13 +37,20 @@ public:
 
   // methods to set pins values [not important right now]
   void  setRPM_PIN(int num);
+  void  setGaugeMode(int num);
   void  setDisplayTypePin(int num);
+
 private:
-  int   RPM_PIN;     // RPM pin number
-  int   displayType; // Display pin number 
-  
-  int   rpmData;     // current RPM value
-  int   gear;        // current gear value
+  int   RPM_PIN;        // RPM pin number
+  int   displayType;    // Display pin number
+
+  int   rpmIdle;       //actual car values will be 600
+  int   rpmRedLine;    //actual car values will be 10000 for testing with volatge input we will use 1400
+  int   blinkPeriod;
+  int   comAnodeLength;
+  int   gaugeMode;
+  int   rpmData;        // current RPM value
+  int   gear;           // current gear value
 
   volatile int bufferPosition; // used as index for the 'spiDataPakcet' array
   uint8_t spiDataPacket[3];    // SPI data packet

@@ -11,8 +11,13 @@ LED_DISPLAY::LED_DISPLAY(){}
    display rigg.*/
 LED_DISPLAY::LED_DISPLAY(long SPI_Frequency)
 {
+  rpmIdle = 0;
+  rpmRedLine = 4800;
+  comAnodeLength = sizeof(comAnodeArr);
+  gaugeMode = 0;
+  
   RPM_PIN = 0;                    // RPM pin number
-  pinMode(RPM_PIN,INPUT);   `     // setting RPM_Pin as input
+  pinMode(RPM_PIN,INPUT);         // setting RPM_Pin as input
 
   for(int i: segArr)              // setting every element of 'segArr' to an output
     pinMode(i,OUTPUT);
@@ -38,11 +43,9 @@ LED_DISPLAY::LED_DISPLAY(long SPI_Frequency)
 /* 'segOff' method sets all the 7 segment pins to value of 1, which turns off
    all the LEDs on the 7 seven segment display.*/
 void LED_DISPLAY::segOff()
-{
-  displayGear(0);
-}
+{ displayGear(0); }
 
-/* 'segOff' method sets all the 7 segment pins to value of 1, which turns off
+/* 'displayGear' method sets all the 7 segment pins to value of 1, which turns off
    all the LEDs on the 7 seven segment display.*/
 void LED_DISPLAY::displayGear(int num)
 {
@@ -51,14 +54,10 @@ void LED_DISPLAY::displayGear(int num)
 }
 
 void LED_DISPLAY::displayNeutral()
-{
-  displayGear(7);
-}
+{ displayGear(7); }
 
 void LED_DISPLAY::displayDecimalPoint()
-{
-  displayGear(8);
-}
+{ displayGear(8); }
 
 void LED_DISPLAY::readToSPIBuffer()
 {
@@ -68,14 +67,10 @@ void LED_DISPLAY::readToSPIBuffer()
 }
 
 int LED_DISPLAY::getRPMData()
-{
-  return processSPIBuffer();
-}
+{ return processSPIBuffer(); }
 
 int LED_DISPLAY::getCurrentGearState()
-{
-  return gear;
-}
+{ return gear; }
 
 int LED_DISPLAY::processSPIBuffer()
 {
@@ -117,14 +112,47 @@ void LED_DISPLAY::printSPI_DATA()
 }
 
 void LED_DISPLAY::setRPM_PIN(int num)
-{
-  RPM_PIN = num;
-  pinMode(RPM_PIN,INPUT);
-}
+{ RPM_PIN = num; pinMode(RPM_PIN,INPUT); }
 
 void LED_DISPLAY::setDisplayTypePin(int num)
+{  RPM_PIN = num; pinMode(RPM_PIN,INPUT); }
+
+void LED_DISPLAY::setLEDGaugeParameters(int idle, int redLine, int numComAnodes, int blinky)
+{ 
+  rpmIdle = idle; rpmRedLine = redLine; 
+  comAnodeLength = numComAnodes; blinkPeriod = blinky;
+}
+
+int LED_DISPLAY::mapToLEDGauge(int num)
+{ return map(num, rpmIdle, rpmRedLine, 0, comAnodeLength); }
+
+void LED_DISPLAY::setGaugeMode(int num)
+{ gaugeMode = num; }
+
+void LED_DISPLAY::displayRPMs(int num)
 {
-  RPM_PIN = num;
-  pinMode(RPM_PIN,INPUT);
+  Serial.println(num);
+  for(int i = 0; i < comAnodeLength; i++)
+  {
+    if((i < num || comAnodeLength - i <= num) && (((millis() / 100) % 2) || num < comAnodeLength / 2))
+    {
+      digitalWrite(comAnodeArr[i],HIGH);
+    }
+    else 
+    {
+      digitalWrite(comAnodeArr[i], LOW);
+    }
+    
+    
+    for (int i = 0; i < 3; i++) 
+    {
+      digitalWrite(color[0][i],LOW);  
+      digitalWrite(color[1][i],HIGH);
+      digitalWrite(color[2][i],HIGH);
+    }
+  
+      for (int i = 0; i < 3; i++) 
+        digitalWrite(color[1][i], LOW);  
+  }
 }
 
