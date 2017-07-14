@@ -29,8 +29,8 @@ int raw2int()
   const int down = 1;
   bool shiftup = 0;
   bool shiftdown = 0;
-  const int ClutchOutsert = 8;   // HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA best var name ever!!
-  const int ClutchInsert = 7;
+  const int ClutchOut = 8;   // HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA best var name ever!!
+  const int ClutchIn = 7;
   const int Position = 2;
   int POS;
   int RPM;
@@ -39,8 +39,8 @@ void setup() {
 
 pinMode(forwards, OUTPUT);//Set relay as an output
 pinMode(backwards, OUTPUT);//Set relay as an output
-pinMode(ClutchInsert, OUTPUT);
-pinMode(ClutchOutsert, OUTPUT);
+pinMode(ClutchIn, OUTPUT);
+pinMode(ClutchOut, OUTPUT);
 pinMode(up, INPUT);
 pinMode(down, INPUT);
 pinMode(RPM_Pin, INPUT);
@@ -68,8 +68,8 @@ void loop()
   Serial.println(POS);
   if(num2 > 900)
   {
-    digitalWrite(ClutchOutsert, LOW);
-    digitalWrite(ClutchInsert, HIGH);
+    digitalWrite(ClutchOut, LOW);
+    digitalWrite(ClutchIn, HIGH);
     POS = analogRead(Position);
     Serial.println(POS);
     delay(500);
@@ -81,8 +81,8 @@ void loop()
     delay(110);
     digitalWrite(forwards,HIGH);
     digitalWrite(backwards,HIGH);
-    digitalWrite(ClutchOutsert, HIGH);
-    digitalWrite(ClutchInsert, LOW);
+    digitalWrite(ClutchOut, HIGH);
+    digitalWrite(ClutchIn, LOW);
     POS = analogRead(Position);
     Serial.println(POS);
     delay(500);
@@ -91,13 +91,13 @@ void loop()
   else
    digitalWrite(forwards,HIGH);
    digitalWrite(backwards,HIGH);
-   digitalWrite(ClutchOutsert, HIGH);
-   digitalWrite(ClutchInsert, HIGH);
+   digitalWrite(ClutchOut, HIGH);
+   digitalWrite(ClutchIn, HIGH);
   
   if(num > 900)
   {
-    digitalWrite(ClutchOutsert, LOW);
-    digitalWrite(ClutchInsert, HIGH);
+    digitalWrite(ClutchOut, LOW);
+    digitalWrite(ClutchIn, HIGH);
     POS = analogRead(Position);
     Serial.println(POS);
     delay(100);
@@ -109,8 +109,8 @@ void loop()
     delay(110);
     digitalWrite(forwards,HIGH);
     digitalWrite(backwards,HIGH);
-    digitalWrite(ClutchOutsert, HIGH);
-    digitalWrite(ClutchInsert, LOW);
+    digitalWrite(ClutchOut, HIGH);
+    digitalWrite(ClutchIn, LOW);
     POS = analogRead(Position);
     Serial.println(POS);
     delay(500);
@@ -118,7 +118,7 @@ void loop()
   else 
    digitalWrite(backwards,HIGH);
    digitalWrite(forwards,HIGH);
-   digitalWrite(ClutchInsert,HIGH);
-   digitalWrite(ClutchOutsert,HIGH);
+   digitalWrite(ClutchIn,HIGH);
+   digitalWrite(ClutchOut,HIGH);
 }
 

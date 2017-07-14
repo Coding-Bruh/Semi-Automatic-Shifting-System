@@ -5,16 +5,16 @@
   int RPM_Pin = 0;
   bool shiftup = 0;
   bool shiftdown = 0;
-  const int ClutchOutsert = 8;
-  const int ClutchInsert = 7;
+  const int ClutchOut = 8;
+  const int ClutchIn = 7;
   int RPM;
 
 void setup() {
 
 pinMode(forwards, OUTPUT);//Set relay as an output
 pinMode(backwards, OUTPUT);//Set relay as an output
-pinMode(ClutchInsert, OUTPUT);
-pinMode(ClutchOutsert, OUTPUT);
+pinMode(ClutchIn, OUTPUT);
+pinMode(ClutchOut, OUTPUT);
 pinMode(up, INPUT);
 pinMode(down, INPUT);
 pinMode(RPM_Pin, INPUT);
@@ -31,8 +31,8 @@ void loop()
   Serial.println(num2);
   if(num > 900)
   {
-    digitalWrite(ClutchOutsert, LOW);
-    digitalWrite(ClutchInsert, HIGH);
+    digitalWrite(ClutchOut, LOW);
+    digitalWrite(ClutchIn, HIGH);
     delay(500);
     digitalWrite(forwards,HIGH);
     digitalWrite(backwards,LOW);
@@ -42,21 +42,21 @@ void loop()
     delay(110);
     digitalWrite(forwards,HIGH);
     digitalWrite(backwards,HIGH);
-    digitalWrite(ClutchOutsert, HIGH);
-    digitalWrite(ClutchInsert, LOW);
+    digitalWrite(ClutchOut, HIGH);
+    digitalWrite(ClutchIn, LOW);
     delay(500);
     
   }
   else
    digitalWrite(forwards,HIGH);
    digitalWrite(backwards,HIGH);
-   digitalWrite(ClutchOutsert, HIGH);
-   digitalWrite(ClutchInsert, HIGH);
+   digitalWrite(ClutchOut, HIGH);
+   digitalWrite(ClutchIn, HIGH);
   
   if(num2 > 900)
   {
-    digitalWrite(ClutchOutsert, LOW);
-    digitalWrite(ClutchInsert, HIGH);
+    digitalWrite(ClutchOut, LOW);
+    digitalWrite(ClutchIn, HIGH);
     delay(500);
     digitalWrite(forwards,LOW);
     digitalWrite(backwards,HIGH);
@@ -66,15 +66,15 @@ void loop()
     delay(110);
     digitalWrite(forwards,HIGH);
     digitalWrite(backwards,HIGH);
-    digitalWrite(ClutchOutsert, HIGH);
-    digitalWrite(ClutchInsert, LOW);
+    digitalWrite(ClutchOut, HIGH);
+    digitalWrite(ClutchIn, LOW);
     delay(500);
   }
   else 
    digitalWrite(backwards,HIGH);
    digitalWrite(forwards,HIGH);
-   digitalWrite(ClutchInsert,HIGH);
-   digitalWrite(ClutchOutsert,HIGH);
+   digitalWrite(ClutchIn,HIGH);
+   digitalWrite(ClutchOut,HIGH);
 }
  
 
