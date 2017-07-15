@@ -17,6 +17,8 @@ void loop() {
   // put your main code here, to run repeatedly:
   
   int RPM = hud.getRPMData();
+  hud.setGaugeMode(1);
   hud.displayGear(hud.getCurrentGearState());
   hud.displayRPMs(hud.mapToLEDGauge(RPM));  
+  
 }

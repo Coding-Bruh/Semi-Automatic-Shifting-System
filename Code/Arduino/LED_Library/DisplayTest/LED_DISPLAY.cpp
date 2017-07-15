@@ -12,7 +12,7 @@ LED_DISPLAY::LED_DISPLAY(){}
 LED_DISPLAY::LED_DISPLAY(long SPI_Frequency)
 {
   rpmIdle = 0;
-  rpmRedLine = 4800;
+  rpmRedLine = 5000;
   comAnodeLength = sizeof(comAnodeArr) / 2; //needed to divide by 2 to get proper readings not sure why.
 
   gaugeMode = false;
@@ -124,11 +124,10 @@ void LED_DISPLAY::setLEDGaugeParameters(int idle, int redLine, int numComAnodes,
 
 int LED_DISPLAY::mapToLEDGauge(int num)
 {
-  #ifdef guageMode
+  if(!gaugeMode)
     return map(num, rpmIdle, rpmRedLine, 0, comAnodeLength / 2);
-  #else
+  else
     return map(num, rpmIdle, rpmRedLine, 0, comAnodeLength);
-  #endif
 }
 
 void LED_DISPLAY::setGaugeMode(int mode)
@@ -138,14 +137,25 @@ void LED_DISPLAY::displayRPMs(int num)
 { 
   //Serial.println(num);      /*for debugging purposes only.*/
   setColorModes(1,1,1);
-  
-  if (num <= 3)
-    setColorModes(1, 0);
-  else if (num > 3 && num <= 6)
-    setColorModes(2, 0);
-  else if (num > 6)
-    setColorModes(0, 0);
-  else;
+
+  if (!gaugeMode)
+  {
+    if (num <= 4)
+      setColorModes(1, 0);
+    else if (num > 4 && num <= 6)
+      setColorModes(2, 0);
+    else if (num > 6)
+      setColorModes(0, 0);
+  }
+  else
+  {
+    if (num <= 10)
+      setColorModes(1, 0);
+    else if (num > 10 && num <= 13)
+      setColorModes(2, 0);
+    else if (num > 13)
+      setColorModes(0, 0);
+  }
   
   for(int i = 0; i < comAnodeLength; i++)
   {   

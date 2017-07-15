@@ -48,7 +48,7 @@ private:
   int   displayType;    // Display pin number
 
   int   rpmIdle;       //actual car values will be 600
-  int   rpmRedLine;    //actual car values will be 10000 for testing with volatge input we will use 1400
+  int   rpmRedLine;    //actual car values will be 10000 for testing with POT input we will use 5000
   int   blinkPeriod;
   int   comAnodeLength;
   int   rpmData;        // current RPM value
@@ -58,10 +58,10 @@ private:
   uint8_t spiDataPacket[3];    // SPI data packet
   
   bool  isrFlag;                // bool used to detect new interrupts
-  bool   gaugeMode;
+  bool  gaugeMode;
  
   int   segArr[8] = {40, 42, 32, 34, 36, 38, 44, 30};
-  //                A,  B,  C,  D,  E,  F,  G, DP
+  //                  A,  B,  C,  D,  E,  F,  G, DP
 
   //                      0,1,2,3,4,5,6,7    <= indeces of 'segCode'
   int   segCode[9][8] = {  {1,1,1,1,1,1,1,1},    /* Turns display off      */
@@ -79,9 +79,9 @@ private:
   //                       C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13,C14,C15,C16
 
   // Declaration of selection array
-  int   color[3][3] = { {A6,A7,A8},      /* Red1, Red2, Red3       */
+  int   color[3][3] = { {A6,A7,A8},      /*   Red1,   Red2,   Red3 */
                         {A0,A1,A2},      /* Green1, Green2, Green3 */
-                        {A3,A5,A4} };    /* Blue1, Blue2, Blue3    */ 
+                        {A3,A5,A4} };    /*  Blue1,  Blue2,  Blue3 */ 
 };
 
 #endif
