@@ -20,61 +20,88 @@ pinMode(down, INPUT);
 pinMode(RPM_Pin, INPUT);
 Serial.begin(19200);
 
+int Time;
+//retrackGear(1000);
+//moveGearToCenter(100);
+Time = micros() - Time;
+Serial.println(Time);
+
 }
 
 void loop() 
 {
-  RPM = analogRead(RPM_Pin);
-
+//  RPM = analogRead(RPM_Pin);
+//
   int num = analogRead(up);
   int num2 = analogRead(down);
-  Serial.println(num2);
+//  Serial.println(num2);
+  //digitalWrite(ClutchOut, LOW);
+  //digitalWrite(ClutchIn, LOW);
+  //digitalWrite(forwards,LOW);
+  //digitalWrite(backwards,LOW);
   if(num > 900)
   {
-    digitalWrite(ClutchOut, LOW);
-    digitalWrite(ClutchIn, HIGH);
-    delay(500);
-    digitalWrite(forwards,HIGH);
-    digitalWrite(backwards,LOW);
-    delay(110);
-    digitalWrite(forwards,LOW);
-    digitalWrite(backwards,HIGH);
-    delay(110);
-    digitalWrite(forwards,HIGH);
-    digitalWrite(backwards,HIGH);
-    digitalWrite(ClutchOut, HIGH);
-    digitalWrite(ClutchIn, LOW);
-    delay(500);
-    
+//    digitalWrite(ClutchOut, LOW);
+//    digitalWrite(ClutchIn, HIGH);
+//    delay(500);
+//    digitalWrite(forwards,HIGH);
+//    digitalWrite(backwards,LOW);
+//    delay(110);
+//    digitalWrite(forwards,LOW);
+//    digitalWrite(backwards,HIGH);
+//    delay(110);
+//    digitalWrite(forwards,HIGH);
+//    digitalWrite(backwards,HIGH);
+//    digitalWrite(ClutchOut, HIGH);
+//    digitalWrite(ClutchIn, LOW);
+//    delay(500);
+//    
   }
-  else
-   digitalWrite(forwards,HIGH);
-   digitalWrite(backwards,HIGH);
-   digitalWrite(ClutchOut, HIGH);
-   digitalWrite(ClutchIn, HIGH);
-  
-  if(num2 > 900)
-  {
-    digitalWrite(ClutchOut, LOW);
-    digitalWrite(ClutchIn, HIGH);
-    delay(500);
-    digitalWrite(forwards,LOW);
-    digitalWrite(backwards,HIGH);
-    delay(110);
-    digitalWrite(forwards,HIGH);
-    digitalWrite(backwards,LOW);
-    delay(110);
-    digitalWrite(forwards,HIGH);
-    digitalWrite(backwards,HIGH);
-    digitalWrite(ClutchOut, HIGH);
-    digitalWrite(ClutchIn, LOW);
-    delay(500);
-  }
-  else 
-   digitalWrite(backwards,HIGH);
-   digitalWrite(forwards,HIGH);
-   digitalWrite(ClutchIn,HIGH);
-   digitalWrite(ClutchOut,HIGH);
+//  else
+//   digitalWrite(forwards,HIGH);
+//   digitalWrite(backwards,HIGH);
+//   digitalWrite(ClutchOut, HIGH);
+//   digitalWrite(ClutchIn, HIGH);
+//  
+//  if(num2 > 900)
+//  {
+//    digitalWrite(ClutchOut, LOW);
+//    digitalWrite(ClutchIn, HIGH);
+//    delay(500);
+//    digitalWrite(forwards,LOW);
+//    digitalWrite(backwards,HIGH);
+//    delay(110);
+//    digitalWrite(forwards,HIGH);
+//    digitalWrite(backwards,LOW);
+//    delay(110);
+//    digitalWrite(forwards,HIGH);
+//    digitalWrite(backwards,HIGH);
+//    digitalWrite(ClutchOut, HIGH);
+//    digitalWrite(ClutchIn, LOW);
+//    delay(500);
+//  }
+//  else 
+//   digitalWrite(backwards,HIGH);
+//   digitalWrite(forwards,HIGH);
+//   digitalWrite(ClutchIn,HIGH);
+//   digitalWrite(ClutchOut,HIGH);
 }
- 
+
+void initalize()
+{
+}
+
+void retrackGear(int sec)
+{
+  digitalWrite(forwards,LOW);
+  digitalWrite(backwards,HIGH);
+  delay(sec);
+}
+
+void moveGearToCenter(int sec)
+{
+  digitalWrite(forwards,HIGH);
+  digitalWrite(backwards,LOW);
+  delay(sec);
+}
 
