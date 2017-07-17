@@ -47,11 +47,11 @@ private:
   int   RPM_PIN;        // RPM pin number
   int   displayType;    // Display pin number
 
-  int   rpmIdle;       //actual car values will be 600
-  int   rpmRedLine;    //actual car values will be 10000 for testing with POT input we will use 5000
+  unsigned int   rpmIdle;       //actual car values will be 600
+  unsigned int   rpmRedLine;    //actual car values will be 10000 for testing with POT input we will use 5000
   int   blinkPeriod;
   int   comAnodeLength;
-  int   rpmData;        // current RPM value
+  unsigned int   rpmData;        // current RPM value
   int   gear;           // current gear value
   
   volatile int bufferPosition; // used as index for the 'spiDataPakcet' array

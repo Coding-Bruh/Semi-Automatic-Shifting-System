@@ -23,14 +23,14 @@ int raw2int()
 }
 ////////////////////////////////////////////////////////             END of SPI define
   
-  const int forwards = 12;
-  const int backwards = 4;
-  const int up = 0;
-  const int down = 1;
-  bool shiftup = 0;
-  bool shiftdown = 0;
+  const int forwards = 10;
+  const int backwards = 11;
+  const int up = A0;
+  const int down = A1;
+  //bool shiftup = 0;
+  //bool shiftdown = 0;
   const int ClutchOut = 8;   // HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA best var name ever!!
-  const int ClutchIn = 7;
+  const int ClutchIn = 9;
   const int Position = 2;
   int POS;
   int RPM;
@@ -43,8 +43,8 @@ pinMode(ClutchIn, OUTPUT);
 pinMode(ClutchOut, OUTPUT);
 pinMode(up, INPUT);
 pinMode(down, INPUT);
-pinMode(RPM_Pin, INPUT);
-pinMode(Position, INPUT);
+//pinMode(RPM_Pin, INPUT);
+//pinMode(Position, INPUT);
 Serial.begin(19200);
 
 
@@ -59,19 +59,19 @@ SPCR |= bit(SPIE);                                                            //
 
 void loop() 
 {
-  POS = analogRead(Position);                                                  // RPM value set to be analog value of RPM given by Simulation POT
-  RPM = raw2int();                                                              // RPM value set to be numerical value of ECU given RPM
+//  POS = analogRead(Position);                                                  // RPM value set to be analog value of RPM given by Simulation POT
+//  RPM = raw2int();                                                              // RPM value set to be numerical value of ECU given RPM
 
          
   int num = analogRead(up);
   int num2 = analogRead(down);
-  Serial.println(POS);
+  Serial.println(num);
+  Serial.println(num2);
   if(num2 > 900)
   {
-    digitalWrite(ClutchOut, LOW);
-    digitalWrite(ClutchIn, HIGH);
-    POS = analogRead(Position);
-    Serial.println(POS);
+   // digitalWrite(ClutchOut, LOW);
+    //digitalWrite(ClutchIn, HIGH);
+   
     delay(500);
     digitalWrite(forwards,HIGH);
     digitalWrite(backwards,LOW);
@@ -81,25 +81,24 @@ void loop()
     delay(110);
     digitalWrite(forwards,HIGH);
     digitalWrite(backwards,HIGH);
-    digitalWrite(ClutchOut, HIGH);
-    digitalWrite(ClutchIn, LOW);
-    POS = analogRead(Position);
-    Serial.println(POS);
+   // digitalWrite(ClutchOut, HIGH);
+    //digitalWrite(ClutchIn, LOW);
+    
+   
     delay(500);
     
   }
   else
    digitalWrite(forwards,HIGH);
    digitalWrite(backwards,HIGH);
-   digitalWrite(ClutchOut, HIGH);
-   digitalWrite(ClutchIn, HIGH);
+   //digitalWrite(ClutchOut, HIGH);
+  // digitalWrite(ClutchIn, HIGH);
   
   if(num > 900)
   {
-    digitalWrite(ClutchOut, LOW);
-    digitalWrite(ClutchIn, HIGH);
-    POS = analogRead(Position);
-    Serial.println(POS);
+    //digitalWrite(ClutchOut, LOW);
+   // digitalWrite(ClutchIn, HIGH);
+    
     delay(100);
     digitalWrite(forwards,LOW);
     digitalWrite(backwards,HIGH);
@@ -109,16 +108,15 @@ void loop()
     delay(110);
     digitalWrite(forwards,HIGH);
     digitalWrite(backwards,HIGH);
-    digitalWrite(ClutchOut, HIGH);
-    digitalWrite(ClutchIn, LOW);
-    POS = analogRead(Position);
-    Serial.println(POS);
+    //digitalWrite(ClutchOut, HIGH);
+    //digitalWrite(ClutchIn, LOW);
+   
     delay(500);
   }
   else 
    digitalWrite(backwards,HIGH);
    digitalWrite(forwards,HIGH);
-   digitalWrite(ClutchIn,HIGH);
-   digitalWrite(ClutchOut,HIGH);
+  // digitalWrite(ClutchIn,HIGH);
+   //digitalWrite(ClutchOut,HIGH);
 }
 
