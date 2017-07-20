@@ -52,7 +52,7 @@ private:
   int   blinkPeriod;
   int   comAnodeLength;
   unsigned int   rpmData;        // current RPM value
-  int   gear;           // current gear value
+  unsigned int   gear;           // current gear value
   
   volatile int bufferPosition; // used as index for the 'spiDataPakcet' array
   uint8_t spiDataPacket[3];    // SPI data packet

@@ -30,7 +30,7 @@ LED PIN - NAME - MCU PIN                1   -   2   -  3
                           
               //7SEG pin setup  LED PIN - NAME - MCU PIN
 #define sA 40                     //  7 -  A   - 40                                  __ 5
-#define sB 42                     //  6 -  B   - 42                                0|__| 6
+#define sB 42                     //  6 -  B   - 42                             dsca   0|__| 6
 #define sC 32                     //  4 -  C   - 32                                4| 1|2
 #define sD 34                     //  2 -  D   - 34                                  --3   .7
 #define sE 36                     //  1 -  E   - 36

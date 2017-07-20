@@ -36,7 +36,7 @@ LED_DISPLAY::LED_DISPLAY(long SPI_Frequency)
   SPI.beginTransaction(SPISettings(SPI_Frequency, MSBFIRST, SPI_MODE0));
   SPCR |= bit (SPE);
   SPCR |= bit (SPIE);
-  //SPCR |= _BV(SPE);
+  SPCR |= _BV(SPE);
   pinMode(MISO,OUTPUT);
 }
 
@@ -81,8 +81,8 @@ int LED_DISPLAY::processSPIBuffer()
     gear = spiDataPacket[2];
     //[For Diagnositics purposes only]--------------------------
         
-         //Serial.print("Converted Data from raw SPI: ");
-         //Serial.println(rpmData);
+         Serial.print("Converted Data from raw SPI: ");
+         Serial.println(rpmData);
          //Serial.print("Gear number");
          //Serial.println(gear);
          //printSPI_DATA();

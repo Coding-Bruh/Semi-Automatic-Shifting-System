@@ -30,6 +30,7 @@ bool start, pass1;
 void setup() {
 
   Serial.begin(19200);
+  Serial1.begin(19200);
 
   pinMode(RED_BUTTON, INPUT);
   pinMode(BLACK_BUTTON, INPUT);
@@ -40,14 +41,14 @@ void setup() {
   pinMode(gearNeg, OUTPUT);
 
   SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
-  //SPCR |= bit (SPE);
-  //SPCR |= bit (SPIE);
-  SPCR |= _BV(SPE);
+  SPCR |= bit (SPE);
+  SPCR |= bit (SPIE);
+  //SPCR |= _BV(SPE);
   pinMode(MISO, OUTPUT);
   pinMode(SS, OUTPUT);
   //sendGearCount();
 
-  start = runStartUpRoutine();
+  //start = runStartUpRoutine();
   pass1 = false;
 
   //go down an gear
@@ -61,38 +62,44 @@ void setup() {
   //retractGearLev(50);
 }
 
-//ISR (SPI_STC_vect)
-//{readToSPIBuffer();}                      // end of interrupt routine SPI_STC_vect
+ISR (SPI_STC_vect)
+{readToSPIBuffer();}                      // end of interrupt routine SPI_STC_vect
 
 
 void loop()
 {
- 
-    digitalWrite(SS, LOW);
-    SPI.transfer(gearCount);
-    digitalWrite(SS, HIGH);
-    
-    up = analogRead(RED_BUTTON);
-    down = analogRead(BLACK_BUTTON);
-    
-    Serial.print("up: ");
-    Serial.print(up);
-    Serial.print(" down: ");
-    Serial.println(down);
-    if (up > 900)
-    {
-      upShift(gearCount);
-      incrementGear();
-      //sendGearCount();
-    }
-    if (down > 900)
-    {
-      downShift(gearCount);
-      decrementGear();
-      //sendGearCount();
-    }
-    digitalWrite(SS, HIGH);
-    Serial.println(gearCount);
+//    up = analogRead(RED_BUTTON);
+//    down = analogRead(BLACK_BUTTON);
+//    
+//    Serial.print("up: ");
+//    Serial.print(up);
+//    Serial.print(" down: ");
+//    Serial.println(down);
+//    if (up > 900)
+//    {
+//      upShift(gearCount);
+//      incrementGear();
+//      //sendGearCount();
+//    }
+//    if (down > 900)
+//    {
+//      downShift(gearCount);
+//      decrementGear();
+//      //sendGearCount();
+//    }
+//   int incomingByte; 
+//   if (Serial1.available()) 
+//   {
+//    incomingByte = Serial.read();
+//   }
+//   else
+//    {
+//      Serial.print("byte: "); Serial.println(Serial.read());
+//    }
+//
+    int rpm = getRPMData();
+    Serial.println(rpm);
+    //Serial.println(gearCount);
     EEPROM.write(gearStateRegister, gearCount);
     digitalWrite(clutchPos, OFF);
     digitalWrite(clutchNeg, OFF);
