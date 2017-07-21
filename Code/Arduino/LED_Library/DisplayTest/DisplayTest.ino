@@ -23,7 +23,7 @@ void loop() {
   //Serial.println(g);
   int RPM = hud.getRPMData();
   hud.setGaugeMode(1);
-  hud.displayGear(g);
+  hud.displayGear(hud.getCurrentGearState());
   hud.displayRPMs(hud.mapToLEDGauge(RPM));  
   
 }

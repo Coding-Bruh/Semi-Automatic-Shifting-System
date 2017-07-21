@@ -35,6 +35,11 @@ int GEAR_SHIFTER::processSPIBuffer()
 
     //---------------------------------------------------------
     bufferPosition = 0;
+//    if ((digitalRead(SS) == LOW))
+//    {
+//      digitalWrite(MISO, 3);
+//      Serial.println("this happened");
+//    }
     return rpmData;
   }
   else return rpmData;
