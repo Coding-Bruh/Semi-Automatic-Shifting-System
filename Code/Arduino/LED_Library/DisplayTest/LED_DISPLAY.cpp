@@ -83,8 +83,8 @@ int LED_DISPLAY::processSPIBuffer()
         
          Serial.print("Converted Data from raw SPI: ");
          Serial.println(rpmData);
-         //Serial.print("Gear number");
-         //Serial.println(gear);
+         Serial.print("Gear number");
+         Serial.println(gear);
          //printSPI_DATA();
          
     //---------------------------------------------------------
