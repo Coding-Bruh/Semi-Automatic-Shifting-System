@@ -19,17 +19,15 @@ int address = 0x0cfff248;
 #define MOSI_1 				p5
 #define MISO_1 				p6
 #define SCLK_1 				p7
-#define CS_PIN_1   		p8
-#define CS_PIN_2   		p9
-
-#define CS_PIN_3   		p14
+#define CS_PIN_1   			p8
+#define CS_PIN_2   			p9
 
 #define SPI_Frequency 800000
 #define Bit_Rate 			8
 #define Mode 					0
 
-SPI spi(MOSI_1,MISO_1,SCLK_1); //mosi, miso, sclk
-I2CSlave i2c(p28, p27);
+SPI spi1(MOSI_1,MISO_1,SCLK_1); //mosi, miso, sclk
+I2C i2c(p28, p27);
 
 
 
@@ -51,54 +49,39 @@ char lByte, hByte;
 int main()
 {
 	pc.printf("new code running program\n");
-  can.frequency(CAN_Frequency);
+	can.frequency(CAN_Frequency);
 	
-	spi.frequency(SPI_Frequency);
-	spi.format(Bit_Rate, Mode);
+	spi1.frequency(SPI_Frequency);
+	spi1.format(Bit_Rate, Mode);
 	
-	i2c.address(0xA0);
-
+	int addr = (0x7<<1 | 0x01); // send address + !write = 1
+	char data;
+	i2c.frequency(500000);
+	
   while(1) 
   {
-		//int i = i2c.receive();
-		//pc.printf("%d \n",i);
-		
-    if(can.read(msg) && (msg.id == address)) 
+    if((can.read(msg)) &&(msg.id == address)) 
     {
-			//pc.printf("%d\n", msg);
+			i2c.start();
+			i2c.write(addr);
+			gear = i2c.read(0);
+			i2c.stop();
 			char lByte = msg.data[0];
 			char hByte = msg.data[1];
 			short voltage;
-			char data[]= {hByte,lByte};
+			//char data[]= {hByte,lByte};
 			voltage = ((short)hByte<<8)|lByte;
 			//pc.printf("hbyte: %x, lbyte: %x \n", hByte, lByte);
-			pc.printf("volatge: %d \n", voltage);
+			pc.printf("voltage: %d \n", voltage);
 			chipSelect1 = 0;
 			chipSelect2 = 0;
-					//gear = spi.write(0x00);
-					//wait(0.0015);
-					spi.write(hByte);
-					spi.write(lByte);
-					spi.write(gear);
-					//wait(0.0015);
-					//gear = spi.write(0x00);
-					/*if(gear == 0 || gear > 8)
-					{
-						
-						//spi.write(gear);
-					}
-					else
-					{
-						spi.write(gear);
-						prevGear = gear;
-					}*/
-					//wait(0.0015);
+					spi1.write(hByte);
+					spi1.write(lByte);
+					spi1.write(gear);
 			chipSelect1 = 1;
-					//if(gear == 0 /*||gear > 8*/)
-						//gear = spi.write(0x00);
 			chipSelect2 = 1;
-			
 			pc.printf("gear: %x \n", gear);
+			
     }
 	}   
 }
