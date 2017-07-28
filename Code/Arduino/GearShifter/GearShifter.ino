@@ -30,7 +30,7 @@ bool start, pass1;
 void setup() {
 
   Serial.begin(19200);
-  Serial1.begin(19200);
+  //Serial1.begin(19200);
 
   pinMode(RED_BUTTON, INPUT);
   pinMode(BLACK_BUTTON, INPUT);
@@ -68,26 +68,26 @@ ISR (SPI_STC_vect)
 
 void loop()
 {
-//    up = analogRead(RED_BUTTON);
-//    down = analogRead(BLACK_BUTTON);
-//    
-//    Serial.print("up: ");
-//    Serial.print(up);
-//    Serial.print(" down: ");
-//    Serial.println(down);
-//    if (up > 900)
-//    {
-//      upShift(gearCount);
-//      incrementGear();
-//      //sendGearCount();
-//    }
-//    if (down > 900)
-//    {
-//      downShift(gearCount);
-//      decrementGear();
-//      //sendGearCount();
-//    }
-//   int incomingByte; 
+    up = analogRead(RED_BUTTON);
+    down = analogRead(BLACK_BUTTON);
+    
+    Serial.print("up: ");
+    Serial.print(up);
+    Serial.print(" down: ");
+    Serial.println(down);
+    if (up > 900)
+    {
+      upShift(gearCount);
+      incrementGear();
+      //sendGearCount();
+    }
+    if (down > 900)
+    {
+      downShift(gearCount);
+      decrementGear();
+      //sendGearCount();
+    }
+   int incomingByte; 
 //   if (Serial1.available()) 
 //   {
 //    incomingByte = Serial.read();
@@ -96,7 +96,7 @@ void loop()
 //    {
 //      Serial.print("byte: "); Serial.println(Serial.read());
 //    }
-//
+
     int rpm = getRPMData();
     Serial.println(rpm);
     //Serial.println(gearCount);
@@ -157,7 +157,7 @@ void upShift(int gearCount)
   else                      // move up a gear
   {
     moveGearLev(500);
-    retractGearLev(100);
+    retractGearLev(150);
   }
 }
 
@@ -172,7 +172,7 @@ void downShift(int gearCount)
   else                    // move down a gear
   {
     retractGearLev(500);
-    moveGearLev(100);
+    moveGearLev(150);
   }
 }
 
