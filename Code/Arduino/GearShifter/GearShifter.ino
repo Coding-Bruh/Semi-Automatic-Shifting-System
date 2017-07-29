@@ -1,25 +1,25 @@
 #include <EEPROM.h>
 #include <SPI.h>
 
-#define IN1 22   //Positive clutch
-#define IN2 24   //negative clutch
-#define IN3 26   //negative gear
-#define IN4 28   //positive gear
+#define IN1 22   //Positive clutch    // -> done
+#define IN2 24   //negative clutch    // -> done
+#define IN3 26   //negative gear      // -> done
+#define IN4 28   //positive gear      // -> done
 
-#define clutchPos IN1
-#define clutchNeg IN2
-#define gearPos   IN4
-#define gearNeg   IN3
+#define clutchPos IN1   // -> done
+#define clutchNeg IN2   // -> done
+#define gearPos   IN4   // -> done
+#define gearNeg   IN3   // -> done
 
-#define gearStateRegister 1
+#define gearStateRegister 1   // -> done
 
 #define RED_BUTTON   A0  //up shift
 #define BLACK_BUTTON A1  //down shift
 
-#define ON LOW
-#define OFF HIGH
+#define ON LOW        // -> done
+#define OFF HIGH      // -> done
 
-uint8_t gearCount = EEPROM.read(gearStateRegister);
+uint8_t gearCount = EEPROM.read(gearStateRegister); // -> done
 int up, down;
 uint8_t spiDataPacket[2];
 uint8_t isrFlag = 0;
@@ -50,16 +50,6 @@ void setup() {
 
   //start = runStartUpRoutine();
   pass1 = false;
-
-  //go down an gear
-  //retractGearLev(500);
-  //moveGearLev(100);
-  //gearStop(100);
-
-  // when in first gear use the following to shift to neutral
-  //moveGearLev(60);
-  //gearStop(5);
-  //retractGearLev(50);
 }
 
 ISR (SPI_STC_vect)
@@ -88,14 +78,6 @@ void loop()
       //sendGearCount();
     }
    int incomingByte; 
-//   if (Serial1.available()) 
-//   {
-//    incomingByte = Serial.read();
-//   }
-//   else
-//    {
-//      Serial.print("byte: "); Serial.println(Serial.read());
-//    }
 
     int rpm = getRPMData();
     Serial.println(rpm);
@@ -157,7 +139,7 @@ void upShift(int gearCount)
   else                      // move up a gear
   {
     moveGearLev(500);
-    retractGearLev(150);
+    retractGearLev(130);
   }
 }
 
@@ -172,7 +154,7 @@ void downShift(int gearCount)
   else                    // move down a gear
   {
     retractGearLev(500);
-    moveGearLev(150);
+    moveGearLev(130);
   }
 }
 
@@ -217,13 +199,6 @@ int processSPIBuffer()
     return rpmData;
   }
   else return rpmData;
-}
-
-void sendGearCount()
-{
-  
-  // setting spi into slave mode
-  //SPCR |= 1 >> SPE;
 }
 
 bool runStartUpRoutine()

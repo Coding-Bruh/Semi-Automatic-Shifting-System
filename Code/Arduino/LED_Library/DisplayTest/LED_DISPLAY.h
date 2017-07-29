@@ -2,6 +2,9 @@
 #define LED_DISPLAY_H
 
 #include <SPI.h>
+#include <EEPROM.h>
+
+#define gearStateRegister 1
 
 class LED_DISPLAY
 {

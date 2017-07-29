@@ -15,6 +15,9 @@ LED_DISPLAY::LED_DISPLAY(long SPI_Frequency)
   rpmRedLine = 5000;
   comAnodeLength = sizeof(comAnodeArr) / 2; //needed to divide by 2 to get proper readings not sure why.
 
+  gear = EEPROM.read(gearStateRegister);
+  if(gear > 6 || gear < 0)
+    gear = 1;  
   gaugeMode = false;
   
   RPM_PIN = 0;                    // RPM pin number
