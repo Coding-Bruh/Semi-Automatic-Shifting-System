@@ -29,8 +29,8 @@ int raw2int()
   const int down = A1;
   //bool shiftup = 0;
   //bool shiftdown = 0;
-  const int ClutchOut = 8;   // HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA best var name ever!!
-  const int ClutchIn = 9;
+  const int ClutchOut = 24;   // HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA best var name ever!!
+  const int ClutchIn = 22;
   const int Position = 2;
   int POS;
   int RPM;
@@ -69,19 +69,19 @@ void loop()
   Serial.println(num2);
   if(num2 > 900)
   {
-   // digitalWrite(ClutchOut, LOW);
-    //digitalWrite(ClutchIn, HIGH);
+    digitalWrite(ClutchOut, LOW);
+    digitalWrite(ClutchIn, HIGH);
    
     delay(500);
-    digitalWrite(forwards,HIGH);
-    digitalWrite(backwards,LOW);
-    delay(110);
-    digitalWrite(forwards,LOW);
-    digitalWrite(backwards,HIGH);
-    delay(110);
-    digitalWrite(forwards,HIGH);
-    digitalWrite(backwards,HIGH);
-   // digitalWrite(ClutchOut, HIGH);
+//    digitalWrite(forwards,HIGH);
+//    digitalWrite(backwards,LOW);
+//    delay(110);
+//    digitalWrite(forwards,LOW);
+//    digitalWrite(backwards,HIGH);
+//    delay(110);
+//    digitalWrite(forwards,HIGH);
+//    digitalWrite(backwards,HIGH);
+    //digitalWrite(ClutchOut, HIGH);
     //digitalWrite(ClutchIn, LOW);
     
    
@@ -89,27 +89,27 @@ void loop()
     
   }
   else
-   digitalWrite(forwards,HIGH);
-   digitalWrite(backwards,HIGH);
-   //digitalWrite(ClutchOut, HIGH);
-  // digitalWrite(ClutchIn, HIGH);
+   //digitalWrite(forwards,HIGH);
+   //digitalWrite(backwards,HIGH);
+   digitalWrite(ClutchOut, HIGH);
+   digitalWrite(ClutchIn, HIGH);
   
   if(num > 900)
   {
     //digitalWrite(ClutchOut, LOW);
-   // digitalWrite(ClutchIn, HIGH);
+    //digitalWrite(ClutchIn, HIGH);
     
-    delay(100);
-    digitalWrite(forwards,LOW);
-    digitalWrite(backwards,HIGH);
-    delay(110);
-    digitalWrite(forwards,HIGH);
-    digitalWrite(backwards,LOW);
-    delay(110);
-    digitalWrite(forwards,HIGH);
-    digitalWrite(backwards,HIGH);
-    //digitalWrite(ClutchOut, HIGH);
-    //digitalWrite(ClutchIn, LOW);
+//    delay(100);
+//    digitalWrite(forwards,LOW);
+//    digitalWrite(backwards,HIGH);
+//    delay(110);
+//    digitalWrite(forwards,HIGH);
+//    digitalWrite(backwards,LOW);
+//    delay(110);
+//    digitalWrite(forwards,HIGH);
+//    digitalWrite(backwards,HIGH);
+    digitalWrite(ClutchOut, HIGH);
+    digitalWrite(ClutchIn, LOW);
    
     delay(500);
   }

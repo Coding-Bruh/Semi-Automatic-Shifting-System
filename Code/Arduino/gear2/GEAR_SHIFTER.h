@@ -1,12 +1,13 @@
 #ifndef GEAR_SHIFTER_H
 #define GEAR_SHIFTER_H
 
-#define gearStateRegister 1
 #define ON LOW
 #define OFF HIGH
 
 #include <SPI.h>
 #include <EEPROM.h>
+
+#define gearStateRegister 0
 
 class GEAR_SHIFTER
 {
@@ -38,12 +39,15 @@ public:
   void  disengageClutch(int sec);
   void  engageClutch(/*bool fastActuation*/ int sec);
   void  stopActuators();
+  
+  bool  initialGearRead = false;
+  int   pressCount = 0;
 private:
   unsigned int engineRPM_Data;  // current RPM value
   volatile int bufferPosition;  // used as index for the 'spiDataPakcet' array
   uint8_t spiDataPacket[3];     // SPI data packet
   bool  isrFlag;                // bool used to detect new interrupts
-  uint8_t gearCount;
+  int  gearCount = 1; //EEPROM.read(gearStateRegister);
   int gearPos, gearNeg, clutchPos, clutchNeg, clutchPosition;
 };
 

@@ -67,20 +67,20 @@ void loop()
     Serial.println(down);
     if (up > 900)
     {
-      upShift(gearCount);
+      //upShift(gearCount);
       incrementGear();
       //sendGearCount();
     }
     if (down > 900)
     {
-      downShift(gearCount);
+      //downShift(gearCount);
       decrementGear();
       //sendGearCount();
     }
    int incomingByte; 
 
     int rpm = getRPMData();
-    Serial.println(rpm);
+    Serial.println(gearCount);
     //Serial.println(gearCount);
     EEPROM.write(gearStateRegister, gearCount);
     digitalWrite(clutchPos, OFF);

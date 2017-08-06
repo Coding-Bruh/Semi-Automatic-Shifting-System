@@ -12,7 +12,7 @@ LED_DISPLAY::LED_DISPLAY(){}
 LED_DISPLAY::LED_DISPLAY(long SPI_Frequency)
 {
   rpmIdle = 0;
-  rpmRedLine = 5000;
+  rpmRedLine = 1500;
   comAnodeLength = sizeof(comAnodeArr) / 2; //needed to divide by 2 to get proper readings not sure why.
 
   gear = EEPROM.read(gearStateRegister);
@@ -84,8 +84,8 @@ int LED_DISPLAY::processSPIBuffer()
     gear = spiDataPacket[2];
     //[For Diagnositics purposes only]--------------------------
         
-         Serial.print("Converted Data from raw SPI: ");
-         Serial.println(rpmData);
+         //Serial.print("Converted Data from raw SPI: ");
+         //Serial.println(rpmData);
          Serial.print("Gear number");
          Serial.println(gear);
          //printSPI_DATA();

@@ -14,7 +14,7 @@ GEAR_SHIFTER::GEAR_SHIFTER(long SPI_Frequency)
   pinMode(gearPos, OUTPUT);
   pinMode(gearNeg, OUTPUT);
 
-  gearCount = EEPROM.read(gearStateRegister);
+  initialGearRead = true;
 
   SPI.beginTransaction(SPISettings(SPI_Frequency, MSBFIRST, SPI_MODE0));
   SPCR |= bit (SPE);
@@ -41,8 +41,8 @@ int GEAR_SHIFTER::processSPIBuffer()
 
          //Serial.print("Converted Data from raw SPI on gear module: ");
          //Serial.println(engineRPM_Data);
-         Serial.print("Gear number: ");
-         Serial.println(temp);
+         //Serial.print("Gear number: ");
+         //Serial.println(gearCount);
          //printSPI_DATA();
 
     //---------------------------------------------------------
@@ -75,14 +75,15 @@ void GEAR_SHIFTER::upShift(int gearCount)
 //  }
   else                      // move up a gear
   {
-    moveGearLev(600);
-    retractGearLev(125);
+    moveGearLev(500);
+    retractGearLev(120);
   }
+  //initiateGearChange = true;
 }
 
 void GEAR_SHIFTER::downShift(int gearCount)
 {
-   if (gearCount == 1) {}  // at neutral, downshifting will take you to first gear. NO GOOD!!
+  if (gearCount == 1) {}  // at neutral, downshifting will take you to first gear. NO GOOD!!
   //  else if(gearCount == 1) // at first gear, shifting to neutral
   //  {
   //    moveGearLev(80);
@@ -90,9 +91,10 @@ void GEAR_SHIFTER::downShift(int gearCount)
   //  }
   else                    // move down a gear
   {
-    retractGearLev(600);
-    moveGearLev(125);
-  } 
+    retractGearLev(500);
+    moveGearLev(120);
+  }
+  //initiateGearChange = true;
 }
  
 void GEAR_SHIFTER::moveGearLev(int sec)
@@ -132,19 +134,20 @@ void GEAR_SHIFTER::engageClutch(int sec)
 
 void GEAR_SHIFTER::incrementGearCount()
 {
-  if (gearCount < 6)
-    gearCount++; 
+  if (gearCount < 6 /*&& initiateGearChange*/)
+    gearCount = gearCount + 1; 
 }
 
 void GEAR_SHIFTER::decrementGearCount()
 {
-  if (gearCount > 1)
-    gearCount--;
+  if (gearCount > 1 /*&& initiateGearChange*/)
+    gearCount = gearCount - 1;
 }
 
 void GEAR_SHIFTER::saveGearState(int gear)
 {
-  EEPROM.write(gearStateRegister, gear);
+  Serial.println(gear);
+  EEPROM.write(0, gear);
 }
 
 void GEAR_SHIFTER::stopActuators()
