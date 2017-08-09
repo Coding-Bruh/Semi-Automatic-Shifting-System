@@ -15,7 +15,8 @@ GEAR_SHIFTER::GEAR_SHIFTER(long SPI_Frequency)
   pinMode(gearNeg, OUTPUT);
 
   initialGearRead = true;
-
+  gearCount = 1;
+  
   SPI.beginTransaction(SPISettings(SPI_Frequency, MSBFIRST, SPI_MODE0));
   SPCR |= bit (SPE);
   SPCR |= bit (SPIE);
@@ -41,8 +42,8 @@ int GEAR_SHIFTER::processSPIBuffer()
 
          //Serial.print("Converted Data from raw SPI on gear module: ");
          //Serial.println(engineRPM_Data);
-         //Serial.print("Gear number: ");
-         //Serial.println(gearCount);
+         Serial.print("Gear number: ");
+         Serial.println(temp);
          //printSPI_DATA();
 
     //---------------------------------------------------------
@@ -67,34 +68,113 @@ int GEAR_SHIFTER::getGearCount()
 
 void GEAR_SHIFTER::upShift(int gearCount)
 {
-  if (gearCount >= 6) {} // at sixth gear, do nothing. No higher gears
-//  else if (gearCount == 0)       // at neutral, shifting to first gear
-//  {
-//    retractGearLev(500);
-//    moveGearLev(100);
-//  }
-  else                      // move up a gear
+  switch (gearCount)
   {
-    moveGearLev(500);
-    retractGearLev(120);
+    case 1:
+      moveGearLev(500);
+      retractGearLev(120);
+      gearLevStop();
+      break;
+    case 2:
+      moveGearLev(500);
+      retractGearLev(120);
+      gearLevStop();
+      break;
+    case 3:
+      moveGearLev(500);
+      retractGearLev(120);
+      gearLevStop();
+      break;
+    case 4:
+      moveGearLev(500);
+      retractGearLev(120);
+      gearLevStop();
+      break;
+    case 5:
+      moveGearLev(500);
+      retractGearLev(120);
+      gearLevStop();
+      break;
+    case 6:
+      moveGearLev(500);
+      retractGearLev(120);
+      gearLevStop();
+      break;
+    default:
+      gearLevStop();
+      break;
   }
-  //initiateGearChange = true;
+  /*
+                  if (gearCount >= 6) {} // at sixth gear, do nothing. No higher gears
+                  else if (gearCount == 0)       // at neutral, shifting to first gear
+                  {
+                    retractGearLev(500);
+                    moveGearLev(100);
+                  }
+                  else                      // move up a gear
+                  {
+                    moveGearLev(500);
+                    retractGearLev(120);
+                  }
+  */
 }
 
 void GEAR_SHIFTER::downShift(int gearCount)
 {
-  if (gearCount == 1) {}  // at neutral, downshifting will take you to first gear. NO GOOD!!
-  //  else if(gearCount == 1) // at first gear, shifting to neutral
-  //  {
-  //    moveGearLev(80);
-  //    retractGearLev(50);
-  //  }
-  else                    // move down a gear
+  disengageClutch(500);
+  clutchLevStop();
+  switch (gearCount)
   {
-    retractGearLev(500);
-    moveGearLev(120);
+    case 1:
+      retractGearLev(500);
+      moveGearLev(120);
+      gearLevStop();
+      break;
+    case 2:
+      retractGearLev(500);
+      moveGearLev(120);
+      gearLevStop();
+      break;
+    case 3:
+      retractGearLev(500);
+      moveGearLev(120);
+      gearLevStop();
+      break;
+    case 4:
+      retractGearLev(500);
+      moveGearLev(120);
+      gearLevStop();
+      break;
+    case 5:
+      retractGearLev(500);
+      moveGearLev(120);
+      gearLevStop();
+      break;
+    case 6:
+      retractGearLev(500);
+      moveGearLev(120);
+      gearLevStop();
+      break;
+    default:
+      gearLevStop();
+      break;
   }
-  //initiateGearChange = true;
+  /*
+                  if (gearCount == 1) {}  // at neutral, downshifting will take you to first gear. NO GOOD!!
+                  else if(gearCount == 1) // at first gear, shifting to neutral
+                  {
+                    moveGearLev(80);
+                    retractGearLev(50);
+                  }
+                  else                    // move down a gear
+                  {
+                    retractGearLev(500);
+                    moveGearLev(120);
+                    gearLevStop();
+                  }
+  */
+  engageClutch(350);
+  clutchLevStop();
 }
  
 void GEAR_SHIFTER::moveGearLev(int sec)
@@ -111,21 +191,25 @@ void GEAR_SHIFTER::retractGearLev(int sec)
   delay(sec);
 }
 
-void GEAR_SHIFTER::gearLevStop(int sec)
+void GEAR_SHIFTER::gearLevStop()
 {
   digitalWrite(gearPos, OFF);
   digitalWrite(gearNeg, OFF);
-  delay(sec);
+}
+void GEAR_SHIFTER::clutchLevStop()
+{
+  digitalWrite(clutchPos, OFF);
+  digitalWrite(clutchNeg, OFF);
 }
 
-void GEAR_SHIFTER::disengageClutch(int sec)
+void GEAR_SHIFTER::engageClutch(int sec)
 {
   digitalWrite(clutchPos, ON);
   digitalWrite(clutchNeg, OFF);
   delay(sec);
 }
 
-void GEAR_SHIFTER::engageClutch(int sec)
+void GEAR_SHIFTER::disengageClutch(int sec)
 {
   digitalWrite(clutchPos, OFF);
   digitalWrite(clutchNeg, ON);
@@ -156,5 +240,20 @@ void GEAR_SHIFTER::stopActuators()
   digitalWrite(gearNeg, OFF);
   digitalWrite(clutchPos, OFF);
   digitalWrite(clutchNeg, OFF); 
+}
+
+void GEAR_SHIFTER::runStartUpSequence()
+{
+  disengageClutch(500);
+  clutchLevStop();
+  for(int i = 0; i < 6; i++)
+  {
+    retractGearLev(500);
+    moveGearLev(120);
+    gearLevStop();
+    delay(500);
+  }
+  engageClutch(500);
+  clutchLevStop();
 }
 

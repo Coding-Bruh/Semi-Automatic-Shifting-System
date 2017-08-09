@@ -17,6 +17,6 @@ void loop() {
   int RPM = hud.getRPMData();
   hud.setGaugeMode(1);
   hud.displayGear(hud.getCurrentGearState());
-  hud.displayRPMs(hud.mapToLEDGauge(RPM));  
+  //hud.displayRPMs(hud.mapToLEDGauge(RPM));  
   
 }
