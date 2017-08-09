@@ -28,8 +28,11 @@ void setup() {
   Wire.onReceive(handleI2CReceive);
   Wire.onRequest(handleI2CRequest);
 
+  //shifter.runStartUpSequence();
+
   /* Testing Clutch */
-  shifter.engageClutch(1000);
+ // shifter.disengageClutch(500);
+  //shifter.engageClutch(50);
   //shifter.saveGearState(100);
   
 //  shifter.retractGearLev(500);
@@ -58,7 +61,7 @@ ISR (SPI_STC_vect)
 void loop()
 {
   int engineRPM = shifter.getEngineRPM_Data();
-
+  //shifter.disengageClutch(500);
   //int neutralReading = analogRead(A2);
   //Serial.print("neutral reading: ");
   //Serial.println(neutralReading);
@@ -80,19 +83,19 @@ void loop()
 /* Shifting to higher gear  */
 
   if (up == 1023){
-    shifter.upShift(shifter.getGearCount());
     shifter.incrementGearCount();
+    shifter.upShift(shifter.getGearCount());
   }
 
 /* Shifting to lower gear */
 
   if (down == 1023){
-    shifter.downShift(shifter.getGearCount());
     shifter.decrementGearCount();
+    shifter.downShift(shifter.getGearCount());
   }
 
   shifter.saveGearState(shifter.getGearCount());
-  delay(1000);
+  //delay(1000);
   shifter.stopActuators();
 }
 

@@ -32,9 +32,11 @@ public:
   void  decrementGearCount();
   
   //methods for actuation
+  void  runStartUpSequence();
   void  moveGearLev(int sec);
   void  retractGearLev(int sec);
-  void  gearLevStop(int sec);
+  void  gearLevStop();
+  void  clutchLevStop();
   void  saveGearState(int gear);
   void  disengageClutch(int sec);
   void  engageClutch(/*bool fastActuation*/ int sec);
@@ -47,7 +49,7 @@ private:
   volatile int bufferPosition;  // used as index for the 'spiDataPakcet' array
   uint8_t spiDataPacket[3];     // SPI data packet
   bool  isrFlag;                // bool used to detect new interrupts
-  int  gearCount = 1; //EEPROM.read(gearStateRegister);
+  int  gearCount; //EEPROM.read(gearStateRegister);
   int gearPos, gearNeg, clutchPos, clutchNeg, clutchPosition;
 };
 

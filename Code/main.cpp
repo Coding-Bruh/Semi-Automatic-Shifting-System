@@ -11,14 +11,14 @@ DigitalOut led2(LED2);
 #define CAN_Frequency 500000
 Serial pc(USBTX, USBRX); // tx, rx
 CANMessage msg;
-int address = 0x0cfff248;
+int address = 0x0cfff448;
 /*-----------------------------------*/
 
 
 /*SPI--------------------------------*/
-#define MOSI_1 				p5
-#define MISO_1 				p6
-#define SCLK_1 				p7
+#define MOSI_1 					p5
+#define MISO_1 					p6
+#define SCLK_1 					p7
 #define CS_PIN_1   			p8
 #define CS_PIN_2   			p9
 
@@ -27,52 +27,45 @@ int address = 0x0cfff248;
 #define Mode 					0
 
 SPI spi1(MOSI_1,MISO_1,SCLK_1); //mosi, miso, sclk
-I2C i2c(p28, p27);
-
-
-
 DigitalOut chipSelect1(CS_PIN_1);
 DigitalOut chipSelect2(CS_PIN_2);
 
-
-
-/* Transmitting Message -------------*/
-//const int  CONTROL_LED2 = 218099784;
-//int             ledStatus;
-/*-----------------------------------*/
+I2C i2c(p28, p27);
 
 int isrFlag = 0;
 int isrFlag2 = 1;
-unsigned char gear, prevGear;
+char gear, prevGear;
 char lByte, hByte;
+
+
+unsigned int clutchPosition; 
  
 int main()
 {
+	pc.baud(115200);
 	pc.printf("new code running program\n");
 	can.frequency(CAN_Frequency);
 	
 	spi1.frequency(SPI_Frequency);
 	spi1.format(Bit_Rate, Mode);
 	
-	int addr = (0x7<<1 | 0x01); // send address + !write = 1
+	long RPM;
+	
+	int i2cAddress = (0x7<<1 | 0x01); // send address + !write = 1
 	char data;
 	i2c.frequency(500000);
 	
   while(1) 
   {
+		i2c.start();
+		i2c.write(i2cAddress);
+		gear = i2c.read(0);
+		i2c.stop();
     if((can.read(msg)) &&(msg.id == address)) 
     {
-			i2c.start();
-			i2c.write(addr);
-			gear = i2c.read(0);
-			i2c.stop();
-			char lByte = msg.data[0];
-			char hByte = msg.data[1];
-			short voltage;
-			//char data[]= {hByte,lByte};
-			voltage = ((short)hByte<<8)|lByte;
-			//pc.printf("hbyte: %x, lbyte: %x \n", hByte, lByte);
-			pc.printf("voltage: %d \n", voltage);
+			char lByte = msg.data[2];
+			char hByte = msg.data[3];
+		
 			chipSelect1 = 0;
 			chipSelect2 = 0;
 					spi1.write(hByte);
@@ -80,9 +73,16 @@ int main()
 					spi1.write(gear);
 			chipSelect1 = 1;
 			chipSelect2 = 1;
-			pc.printf("gear: %x \n", gear);
-			
     }
+		/*The following is for diagonistic purposes only*/
+			//pc.printf("hbyte: %x, lbyte: %x \n", hByte, lByte);
+			//short voltage;
+			//char data[]= {hByte,lByte};
+			//voltage = ((short)hByte<<8)|lByte;
+			//pc.printf("voltage: %d \n", voltage);
+			pc.printf("gear: %x \n", gear);
+			//pc.printf("clutch position: %d \n", clutchPosition);
+			//pc.printf("RPM: %d \n", RPM);
 	}   
 }
 

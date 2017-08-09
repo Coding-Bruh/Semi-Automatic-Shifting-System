@@ -84,10 +84,10 @@ int LED_DISPLAY::processSPIBuffer()
     gear = spiDataPacket[2];
     //[For Diagnositics purposes only]--------------------------
         
-         //Serial.print("Converted Data from raw SPI: ");
-         //Serial.println(rpmData);
-         Serial.print("Gear number");
-         Serial.println(gear);
+         Serial.print("Converted Data from raw SPI: ");
+         Serial.println(rpmData);
+         Serial.print("Gear number: ");
+         Serial.println(spiDataPacket[2]);
          //printSPI_DATA();
          
     //---------------------------------------------------------

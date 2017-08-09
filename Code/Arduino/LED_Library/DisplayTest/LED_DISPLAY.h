@@ -14,7 +14,7 @@ public:
   LED_DISPLAY(long SPI_Frequency);
 
   // initialization method
-  bool  makeDerricksBlinkyBlinky();
+  bool  runStartUpSequence();
 
   // methods for reading and processing SPI data
   void  readToSPIBuffer();
@@ -55,7 +55,7 @@ private:
   int   blinkPeriod;
   int   comAnodeLength;
   unsigned int   rpmData;        // current RPM value
-  unsigned int   gear;           // current gear value
+  uint8_t        gear;           // current gear value
   
   volatile int bufferPosition; // used as index for the 'spiDataPakcet' array
   uint8_t spiDataPacket[3];    // SPI data packet
