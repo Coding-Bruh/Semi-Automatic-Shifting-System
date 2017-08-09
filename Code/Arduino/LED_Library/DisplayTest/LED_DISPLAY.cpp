@@ -12,7 +12,7 @@ LED_DISPLAY::LED_DISPLAY(){}
 LED_DISPLAY::LED_DISPLAY(long SPI_Frequency)
 {
   rpmIdle = 0;
-  rpmRedLine = 1500;
+  rpmRedLine = 800;
   comAnodeLength = sizeof(comAnodeArr) / 2; //needed to divide by 2 to get proper readings not sure why.
 
   gear = EEPROM.read(gearStateRegister);
