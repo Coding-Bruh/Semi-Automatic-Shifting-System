@@ -21,7 +21,7 @@ void loop() {
   Wire.requestFrom(7, 1);
   if (Wire.available())   // slave may send less than requested
   { 
-    gear = Wire.read();    // receive a byte as character         /
+    gear = Wire.read();    // receive a byte as character from slave         /
   }
   RPM = hud.getRPMData();
   hud.setGaugeMode(1);
