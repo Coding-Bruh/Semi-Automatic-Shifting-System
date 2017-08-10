@@ -72,7 +72,7 @@ void GEAR_SHIFTER::upShift(int gearCount)
   {
     case 1:
       moveGearLev(500);
-      retractGearLev(120);
+      retractGearLev(100);
       gearLevStop();
       break;
     case 2:

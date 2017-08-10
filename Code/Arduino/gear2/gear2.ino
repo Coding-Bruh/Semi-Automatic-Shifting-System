@@ -25,6 +25,7 @@ void setup() {
   pinMode(A2, INPUT);
   
   Wire.begin(7); // join i2c bus with address #7
+  Wire.setClock(400000L);
   Wire.onReceive(handleI2CReceive);
   Wire.onRequest(handleI2CRequest);
 
