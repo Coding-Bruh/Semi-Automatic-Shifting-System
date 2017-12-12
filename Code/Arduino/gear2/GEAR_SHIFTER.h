@@ -47,7 +47,7 @@ public:
 private:
   unsigned int engineRPM_Data;  // current RPM value
   volatile int bufferPosition;  // used as index for the 'spiDataPakcet' array
-  uint8_t spiDataPacket[3];     // SPI data packet
+  uint8_t spiDataPacket[2];     // SPI data packet
   bool  isrFlag;                // bool used to detect new interrupts
   int  gearCount; //EEPROM.read(gearStateRegister);
   int gearPos, gearNeg, clutchPos, clutchNeg, clutchPosition;

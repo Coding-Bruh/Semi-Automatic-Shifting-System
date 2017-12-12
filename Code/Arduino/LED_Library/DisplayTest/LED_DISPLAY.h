@@ -54,11 +54,11 @@ private:
   unsigned int   rpmRedLine;    //actual car values will be 10000 for testing with POT input we will use 5000
   int   blinkPeriod;
   int   comAnodeLength;
-  unsigned int   rpmData;        // current RPM value
+  int     rpmData;           // current RPM value
   uint8_t        gear;           // current gear value
   
   volatile int bufferPosition; // used as index for the 'spiDataPakcet' array
-  uint8_t spiDataPacket[3];    // SPI data packet
+  uint8_t spiDataPacket[2];    // SPI data packet
   
   bool  isrFlag;                // bool used to detect new interrupts
   bool  gaugeMode;

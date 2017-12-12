@@ -80,14 +80,12 @@ int LED_DISPLAY::processSPIBuffer()
   if (isrFlag == 0)
   {
     isrFlag = 1;
-    rpmData = (spiDataPacket[0]<< 8) | spiDataPacket[1];
-    gear = spiDataPacket[2];
+    int rpm = (spiDataPacket[0]<< 8) | spiDataPacket[1];
+    rpmData = ((rpm >= 5900) ? rpmData : rpm);
     //[For Diagnositics purposes only]--------------------------
         
-         Serial.print("Converted Data from raw SPI: ");
-         Serial.println(rpmData);
-         Serial.print("Gear number: ");
-         Serial.println(spiDataPacket[2]);
+         //Serial.print("Converted Data from raw SPI: ");
+         //Serial.println(rpmData);
          //printSPI_DATA();
          
     //---------------------------------------------------------

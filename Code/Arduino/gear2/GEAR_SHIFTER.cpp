@@ -36,14 +36,14 @@ int GEAR_SHIFTER::processSPIBuffer()
   if (isrFlag == 0)
   {
     isrFlag = 1;
-    engineRPM_Data = (spiDataPacket[0]<< 8) | spiDataPacket[1];
-    int temp = spiDataPacket[2];
+    int rpmData = (spiDataPacket[0]<< 8) | spiDataPacket[1];
+    engineRPM_Data = ((rpmData >= 5900) ? engineRPM_Data : rpmData);
     //[For Diagnositics purposes only]--------------------------
 
          //Serial.print("Converted Data from raw SPI on gear module: ");
          //Serial.println(engineRPM_Data);
-         Serial.print("Gear number: ");
-         Serial.println(temp);
+         //Serial.print("Gear number: ");
+         //Serial.println(temp);
          //printSPI_DATA();
 
     //---------------------------------------------------------
@@ -77,27 +77,27 @@ void GEAR_SHIFTER::upShift(int gearCount)
       break;
     case 2:
       moveGearLev(500);
-      retractGearLev(120);
+      retractGearLev(100);
       gearLevStop();
       break;
     case 3:
       moveGearLev(500);
-      retractGearLev(120);
+      retractGearLev(100);
       gearLevStop();
       break;
     case 4:
       moveGearLev(500);
-      retractGearLev(120);
+      retractGearLev(100);
       gearLevStop();
       break;
     case 5:
       moveGearLev(500);
-      retractGearLev(120);
+      retractGearLev(100);
       gearLevStop();
       break;
     case 6:
       moveGearLev(500);
-      retractGearLev(120);
+      retractGearLev(100);
       gearLevStop();
       break;
     default:
@@ -121,38 +121,36 @@ void GEAR_SHIFTER::upShift(int gearCount)
 
 void GEAR_SHIFTER::downShift(int gearCount)
 {
-  disengageClutch(500);
-  clutchLevStop();
   switch (gearCount)
   {
     case 1:
       retractGearLev(500);
-      moveGearLev(120);
+      moveGearLev(100);
       gearLevStop();
       break;
     case 2:
       retractGearLev(500);
-      moveGearLev(120);
+      moveGearLev(100);
       gearLevStop();
       break;
     case 3:
       retractGearLev(500);
-      moveGearLev(120);
+      moveGearLev(100);
       gearLevStop();
       break;
     case 4:
       retractGearLev(500);
-      moveGearLev(120);
+      moveGearLev(100);
       gearLevStop();
       break;
     case 5:
       retractGearLev(500);
-      moveGearLev(120);
+      moveGearLev(100);
       gearLevStop();
       break;
     case 6:
       retractGearLev(500);
-      moveGearLev(120);
+      moveGearLev(100);
       gearLevStop();
       break;
     default:
@@ -173,8 +171,6 @@ void GEAR_SHIFTER::downShift(int gearCount)
                     gearLevStop();
                   }
   */
-  engageClutch(350);
-  clutchLevStop();
 }
  
 void GEAR_SHIFTER::moveGearLev(int sec)
@@ -230,7 +226,7 @@ void GEAR_SHIFTER::decrementGearCount()
 
 void GEAR_SHIFTER::saveGearState(int gear)
 {
-  Serial.println(gear);
+  //Serial.println(gear);
   EEPROM.write(0, gear);
 }
 
@@ -244,16 +240,25 @@ void GEAR_SHIFTER::stopActuators()
 
 void GEAR_SHIFTER::runStartUpSequence()
 {
-  disengageClutch(500);
+  disengageClutch(200);
   clutchLevStop();
-  for(int i = 0; i < 6; i++)
+  for(int i = 0; i < 7; i++)
   {
-    retractGearLev(500);
-    moveGearLev(120);
-    gearLevStop();
+    if(i < 6)
+    {
+      retractGearLev(500);
+      moveGearLev(100);
+      gearLevStop();
+    }
+    else
+    {
+      retractGearLev(500);
+      moveGearLev(60);
+      gearLevStop();
+    }
     delay(500);
   }
-  engageClutch(500);
+  engageClutch(200);
   clutchLevStop();
 }
 

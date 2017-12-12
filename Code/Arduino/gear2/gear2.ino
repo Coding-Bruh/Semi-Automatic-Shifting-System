@@ -9,11 +9,11 @@
 
 #define SPI_Frequency 800000
 
-int up, down;
+int up, down, idle;
+bool disengaged;
 
 GEAR_SHIFTER shifter;
-
- int startTime, endTime;
+int engineRPM = 0;
 
 void setup() {
   shifter = GEAR_SHIFTER(SPI_Frequency);
@@ -28,24 +28,34 @@ void setup() {
   Wire.onReceive(handleI2CReceive);
   Wire.onRequest(handleI2CRequest);
 
-  //shifter.runStartUpSequence();
-
-  /* Testing Clutch */
- // shifter.disengageClutch(500);
-  //shifter.engageClutch(50);
-  //shifter.saveGearState(100);
+  idle = 175;
+  disengaged = false;
+  //------------------------------------------
+  shifter.disengageClutch(1000);  
+  shifter.engageClutch(600);
+  shifter.clutchLevStop();
   
-//  shifter.retractGearLev(500);
-//  shifter.moveGearLev(100);
-//  shifter.stopActuators();
-  
-  /*Finding nuetral*/
-  // Stage 1: retract gear lev
-    //shifter.retractGearLev(120);
-    //delay(1000);
-  // Stage 2: move gear lev
-   // shifter.moveGearLev(120);
-    
+  shifter.disengageClutch(200);
+  shifter.clutchLevStop();
+  for(int i = 0; i < 7; i++)
+  {
+    if(i < 6)
+    {
+      shifter.retractGearLev(500);
+      shifter.moveGearLev(100);
+      shifter.gearLevStop();
+    }
+    else
+    {
+      shifter.retractGearLev(500);
+      shifter.moveGearLev(60);
+      shifter.gearLevStop();
+    }
+    delay(500);
+  }
+  //----------------------------------------
+   disengaged = true;
+//shifter.moveGearLev(500);
 }
 
 // interrupt handlers
@@ -60,57 +70,58 @@ ISR (SPI_STC_vect)
 
 void loop()
 {
-  int engineRPM = shifter.getEngineRPM_Data();
-  //shifter.disengageClutch(500);
-  //int neutralReading = analogRead(A2);
-  //Serial.print("neutral reading: ");
-  //Serial.println(neutralReading);
-  
-  //while (neutralReading != 0)
-  //{
-    //Serial.println(neutralReading);
-    //shifter.moveGearLev(0.5);
-  //}
-  
+  engineRPM = shifter.getEngineRPM_Data();
+  //Serial.print("RPM: ");
+  //Serial.println(engineRPM);
+
+  if (engineRPM <= idle && !disengaged)
+  {
+    shifter.disengageClutch(200);
+    shifter.clutchLevStop();
+    disengaged = true;
+  }
+  else if (engineRPM > idle && disengaged)
+  {
+    shifter.engageClutch(200);
+    shifter.clutchLevStop();
+    disengaged = false;
+  }
+  else;
+
   up = analogRead(RED_BUTTON);
   down = analogRead(BLACK_BUTTON);
-
-//  Serial.print("up: ");
-//  Serial.print(up);
-//  Serial.print(" down: ");
-//  Serial.println(down);
   
 /* Shifting to higher gear  */
-
-  if (up == 1023){
+  if (up >= 1000){
     shifter.incrementGearCount();
     shifter.upShift(shifter.getGearCount());
   }
-
-/* Shifting to lower gear */
-
-  if (down == 1023){
+  else if (down >= 1000){
+    shifter.disengageClutch(200);
+    shifter.clutchLevStop();
     shifter.decrementGearCount();
     shifter.downShift(shifter.getGearCount());
+    shifter.engageClutch(200);
+    shifter.clutchLevStop();
   }
+  else;
 
   shifter.saveGearState(shifter.getGearCount());
-  //delay(1000);
   shifter.stopActuators();
 }
 
-//
-//void neutral(int i)
-//{
-//  //    while(i > 0)
-//  //    {
-//  //      retractGearLev(500);
-//  //      moveGearLev(100);
-//  //      gearStop(50);
-//  //      i--;
-//  //    }
-//  //gearStop(10);
-//  moveGearLev(20);
-//  retractGearLev(20);
-//}
-
+///* Testing Clutch */
+//  shifter.disengageClutch(100);
+//  shifter.engageClutch(200);
+//  shifter.saveGearState(100);
+//  
+//  shifter.retractGearLev(500);
+//  shifter.moveGearLev(100);
+//  shifter.stopActuators();
+//  
+//  /*Finding nuetral*/
+//   //Stage 1: retract gear lev
+//   shifter.retractGearLev(120);
+//   delay(1000);
+//   //Stage 2: move gear lev
+//   shifter.moveGearLev(120);
